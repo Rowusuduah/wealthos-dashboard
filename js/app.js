@@ -779,6 +779,21 @@ function init() {
   // Init net worth tracker
   if (typeof initNetWorth === 'function') initNetWorth();
 
+  // Date label: Month · Week N of year · Pay period indicator
+  (function renderDateLabel() {
+    const now     = new Date();
+    const month   = now.toLocaleString('en-US', { month: 'long' });
+    const year    = now.getFullYear();
+    // ISO week number
+    const d = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+    const weekNum = Math.ceil((((d - new Date(Date.UTC(d.getUTCFullYear(),0,1))) / 86400000) + 1) / 7);
+    // Biweekly pay period (odd/even week = period A/B)
+    const period  = weekNum % 2 === 1 ? 'Pay Week' : 'Off Week';
+    const el = document.getElementById('overview-date-label');
+    if (el) el.innerHTML = `${month} ${year} · <strong style="color:var(--text)">Week ${weekNum}</strong> · <span style="color:var(--green);font-weight:600">${period}</span>`;
+  })();
+
   // Render all sections
   renderKPIs();
   renderOverviewTrackerPulse();
