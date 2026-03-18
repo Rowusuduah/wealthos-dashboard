@@ -779,19 +779,27 @@ function init() {
   // Init net worth tracker
   if (typeof initNetWorth === 'function') initNetWorth();
 
-  // Date label: Month · Week N of year · Pay period indicator
+  // Date label: countdown to June 1 start, then live week/pay period once active
   (function renderDateLabel() {
-    const now     = new Date();
-    const month   = now.toLocaleString('en-US', { month: 'long' });
-    const year    = now.getFullYear();
-    // ISO week number
-    const d = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
-    d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
-    const weekNum = Math.ceil((((d - new Date(Date.UTC(d.getUTCFullYear(),0,1))) / 86400000) + 1) / 7);
-    // Biweekly pay period (odd/even week = period A/B)
-    const period  = weekNum % 2 === 1 ? 'Pay Week' : 'Off Week';
-    const el = document.getElementById('overview-date-label');
-    if (el) el.innerHTML = `${month} ${year} · <strong style="color:var(--text)">Week ${weekNum}</strong> · <span style="color:var(--green);font-weight:600">${period}</span>`;
+    const now       = new Date();
+    const START     = new Date('2026-06-01T00:00:00');
+    const el        = document.getElementById('overview-date-label');
+    if (!el) return;
+
+    if (now < START) {
+      // Pre-start: show countdown
+      const daysLeft = Math.ceil((START - now) / 86400000);
+      el.innerHTML = `<span style="color:var(--orange);font-weight:600">Starts June 1, 2026</span> · <strong style="color:var(--text)">${daysLeft} days to go</strong>`;
+    } else {
+      // Active: show month, week since start, and pay period
+      const month    = now.toLocaleString('en-US', { month: 'long' });
+      const year     = now.getFullYear();
+      const daysSince = Math.floor((now - START) / 86400000);
+      const weekNum  = Math.floor(daysSince / 7) + 1;
+      // Pay period: biweekly from June 1 — even weeks (0,2,4…) = pay week
+      const period   = Math.floor(daysSince / 7) % 2 === 0 ? 'Pay Week' : 'Off Week';
+      el.innerHTML   = `${month} ${year} · <strong style="color:var(--text)">Week ${weekNum}</strong> · <span style="color:var(--green);font-weight:600">${period}</span>`;
+    }
   })();
 
   // Render all sections
