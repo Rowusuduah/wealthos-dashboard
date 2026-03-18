@@ -43,8 +43,15 @@ self.addEventListener('fetch', event => {
   if (url.origin !== self.location.origin) return;
 
   event.respondWith(
-    caches.match(event.request)
-      .then(cached => cached || fetch(event.request))
-      .catch(() => caches.match('/index.html')) // Offline fallback
+    caches.match(event.request).then(cached => {
+      if (cached) return cached;
+      return fetch(event.request).catch(() => {
+        // Only serve index.html fallback for document (navigation) requests.
+        // Returning index.html for CSS/JS would cause the browser to parse HTML
+        // as a stylesheet/script, producing runtime errors.
+        if (event.request.destination === 'document') return caches.match('/index.html');
+        return new Response('', { status: 408, statusText: 'Offline' });
+      });
+    })
   );
 });

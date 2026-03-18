@@ -25,6 +25,8 @@ body {
   background: var(--bg);
   color: var(--text);
   min-height: 100vh;
+  scrollbar-width: thin;
+  scrollbar-color: var(--brig) transparent;
 }
 /* overflow-x:hidden removed — can break position:sticky and clip fixed children */
 
@@ -79,6 +81,15 @@ body::before {
 }
 :focus:not(:focus-visible) {
   outline: none;
+}
+
+/* Autofill dark-theme override — prevents browser yellow injection into dark inputs */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px var(--surf2) inset;
+  -webkit-text-fill-color: var(--text);
+  caret-color: var(--text);
 }
 
 /* ─── Navigation ──────────────────────────────────────────────────────────── */
@@ -247,7 +258,7 @@ body::before {
 .bimd   { width: 5px; height: 5px; border-radius: 50%; background: var(--border); flex-shrink: 0; margin-top: 4px; }
 .bimd.b { background: var(--purple); }
 .bimn   { font-size: 11px; color: var(--muted); line-height: 1.3; }
-.bimno  { font-size: 9px; color: rgba(138,138,166,.7); margin-top: 1px; }
+.bimno  { font-size: 9px; color: #7a7a9a; margin-top: 1px; } /* #7a7a9a = 4.6:1 on --bg, passes WCAG AA */
 .bima   { font-size: 12px; font-weight: 600; flex-shrink: 0; padding-left: 8px; }
 .bima.z { color: var(--red); opacity: .7; }
 
@@ -472,6 +483,13 @@ tbody td:first-child { text-align: left; color: var(--text); }
   .ntab { font-size: 10px; padding: 4px 7px; }
 }
 
+/* ─── Responsive: Very small phones (360px) ─────────────────────────────── */
+@media (max-width: 360px) {
+  .kgrid { grid-template-columns: repeat(2, 1fr); }
+  .bgrid { grid-template-columns: 1fr; }
+  .sec   { padding: 14px 10px; }
+}
+
 /* ─── Responsive: Mobile (600px) ─────────────────────────────────────────── */
 @media (max-width: 600px) {
   .g2    { grid-template-columns: 1fr; }
@@ -670,4 +688,15 @@ tbody td:first-child { text-align: left; color: var(--text); }
   .tlog-row  .tlog-cat { display: none; }
   .tph { gap: 8px; padding: 10px 12px; }
   .tpnav { padding: 5px 10px; }
+}
+
+/* ─── Reduced Motion (WCAG 2.1 SC 2.3.3 — Level AA) ────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .dot { animation: none; }
+  .fi  { animation: none; opacity: 1; transform: none; }
 }

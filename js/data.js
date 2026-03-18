@@ -69,7 +69,7 @@ const S = [
     {n:"Immigration Attorney",bw:10,nt:"Annual check-in",b:1},
     {n:"CPA / Tax Advisor",bw:8,nt:"International tax specialist",b:1}
   ],sub:32},
-  {id:"profdev",l:"Professional Dev",e:"🎓",c:"#86efac",items:[
+  {id:"profdev",l:"Professional Dev",e:"🎓",c:"#67e8f9",items:[ /* distinct from annual's #86efac */
     {n:"Courses, Books & Certs",bw:20,nt:"Udemy, Coursera. 10x ROI",b:1},
     {n:"Career Strategy Fund",bw:15,nt:"Job-hop readiness",b:1}
   ],sub:35},
@@ -93,14 +93,17 @@ const ML = [
   {age:60,yr:31,p:"$4,300,000",s:"Retirement funded. Legacy secured."},
 ];
 
-// ─── KPI Cards ─────────────────────────────────────────────────────────────
+// ─── Pay periods per year ───────────────────────────────────────────────────
+const PERIODS_PER_YEAR = 26; // biweekly = 26 pay periods
+
+// ─── KPI Cards (computed from NET + S so they stay in sync if NET changes) ─
 const KPI_DATA = [
-  {l:'Net / Paycheck',v:'$2,806',s:'every 2 weeks',c:'var(--green)'},
-  {l:'Net / Month',v:'$6,079',s:'×26÷12 correct',c:''},
-  {l:'Net / Year',v:'$72,950',s:'after $14,050 tax',c:''},
-  {l:'Savings Rate',v:'22.9%',s:'benchmark >20% ✓',c:'var(--purple)'},
-  {l:'Year 1 Saved',v:'$16,723',s:'investing + reserves',c:'var(--gold)'},
-  {l:'Age 60 Projection',v:'$4.3M+',s:'at 7% avg return',c:'var(--orange)'},
+  {l:'Net / Paycheck', v:'$' + NET.toLocaleString('en-US',{maximumFractionDigits:0}),                                    s:'every 2 weeks',           c:'var(--green)'},
+  {l:'Net / Month',    v:'$' + Math.round(NET * PERIODS_PER_YEAR / 12).toLocaleString('en-US'),                           s:'×26÷12 correct',          c:''},
+  {l:'Net / Year',     v:'$' + Math.round(NET * PERIODS_PER_YEAR).toLocaleString('en-US'),                                s:'after $14,050 tax',       c:''},
+  {l:'Wealth Building Rate', v:(S.find(s=>s.id==='wealth').sub / NET * 100).toFixed(1) + '%',                             s:'direct investing only',   c:'var(--purple)'},
+  {l:'Year 1 Saved',   v:'$' + Math.round(S.find(s=>s.id==='wealth').sub * PERIODS_PER_YEAR).toLocaleString('en-US'),    s:'investing + reserves',    c:'var(--gold)'},
+  {l:'Age 60 Projection', v:'$4.3M+',                                                                                      s:'at 7% avg return',        c:'var(--orange)'},
 ];
 
 // ─── Wealth Goals ──────────────────────────────────────────────────────────

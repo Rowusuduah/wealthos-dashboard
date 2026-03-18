@@ -11,7 +11,7 @@ const CL = CHECKLIST_ITEMS.map(item => ({...item, done: false}));
 
 // Money format: convert biweekly amount to the selected period
 function fmt(bw, mode) {
-  const mul = mode === 'mo' ? 26 / 12 : mode === 'yr' ? 26 : 1;
+  const mul = mode === 'mo' ? PERIODS_PER_YEAR / 12 : mode === 'yr' ? PERIODS_PER_YEAR : 1;
   return '$' + (bw * mul).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
 }
 
@@ -275,7 +275,7 @@ function renderBars() {
 // ─── Budget Grid ─────────────────────────────────────────────────────────────
 function renderBudgetGrid() {
   const el = document.getElementById('bgrid');
-  const m  = budgetView === 'mo' ? 26/12 : budgetView === 'yr' ? 26 : 1;
+  const m  = budgetView === 'mo' ? PERIODS_PER_YEAR/12 : budgetView === 'yr' ? PERIODS_PER_YEAR : 1;
   el.innerHTML = S.map(s => {
     const tot = (s.sub * m).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
     const pct = (s.sub / NET * 100).toFixed(1);
@@ -309,8 +309,6 @@ function renderBudgetGrid() {
       ${items}
     </div>`;
   }).join('');
-  // Re-attach health insurance edit handlers
-  initHIEditors();
 }
 
 function setBudgetView(v, btn) {
@@ -329,10 +327,18 @@ function filterBudget() {
 }
 
 // ─── Health Insurance Inline Edit ────────────────────────────────────────────
+// Uses event delegation on bgrid so listeners don't stack across renderBudgetGrid() calls
 function initHIEditors() {
-  document.querySelectorAll('.hi-edit').forEach(el => {
-    el.addEventListener('click', openHIEdit);
-    el.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openHIEdit.call(el); }});
+  const bgrid = document.getElementById('bgrid');
+  if (!bgrid || bgrid._hiDelegated) return;
+  bgrid._hiDelegated = true;
+  bgrid.addEventListener('click', e => {
+    const el = e.target.closest('.hi-edit');
+    if (el) openHIEdit.call(el);
+  });
+  bgrid.addEventListener('keydown', e => {
+    const el = e.target.closest('.hi-edit');
+    if (el && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openHIEdit.call(el); }
   });
 }
 
@@ -352,17 +358,17 @@ function openHIEdit() {
   inp.focus();
 
   function commit() {
-    // Clamp: must be 0–NET, non-negative, non-infinite
-    const raw = parseFloat(inp.value) || 0;
-    const val = Math.max(0, Math.min(raw, NET));
+    // Clamp: must be finite, 0–NET, non-negative
+    const raw = parseFloat(inp.value);
+    const val = Math.max(0, Math.min(Number.isFinite(raw) ? raw : 0, NET));
     saveHealthInsurance(val);
-    // Update the daily living sub-total in S using financial rounding
+    // Update HI item then recompute sub from items (avoids accumulation drift)
     const living = S.find(s => s.id === 'living');
     if (living) {
       const hiItem = living.items.find(i => i.n === 'Health Insurance');
       if (hiItem) {
-        living.sub = roundMoney(living.sub - hiItem.bw + val);
         hiItem.bw = val;
+        living.sub = roundMoney(living.items.reduce((sum, it) => sum + it.bw, 0));
       }
     }
     renderBudgetGrid();
@@ -377,7 +383,7 @@ function openHIEdit() {
 // ─── Full Table ───────────────────────────────────────────────────────────────
 function renderTable() {
   const el  = document.getElementById('ftable');
-  const m   = tableView === 'mo' ? 26/12 : tableView === 'yr' ? 26 : 1;
+  const m   = tableView === 'mo' ? PERIODS_PER_YEAR/12 : tableView === 'yr' ? PERIODS_PER_YEAR : 1;
   const lbl = tableView === 'mo' ? 'Monthly' : tableView === 'yr' ? 'Annual' : 'Biweekly';
 
   let h = `<thead><tr>
@@ -433,7 +439,7 @@ function setTableView(v, btn) {
 
 // ─── Export CSV ───────────────────────────────────────────────────────────────
 function exportCSV() {
-  const m   = tableView === 'mo' ? 26/12 : tableView === 'yr' ? 26 : 1;
+  const m   = tableView === 'mo' ? PERIODS_PER_YEAR/12 : tableView === 'yr' ? PERIODS_PER_YEAR : 1;
   const lbl = tableView === 'mo' ? 'Monthly' : tableView === 'yr' ? 'Annual' : 'Biweekly';
   let csv    = `Item,${lbl} ($),% Net,Notes\n`;
   csv += `INCOME,,,\n`;
@@ -452,7 +458,7 @@ function exportCSV() {
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
   a.href     = url;
-  a.download = `WealthOS_Budget_${lbl}_2026.csv`;
+  a.download = `WealthOS_Budget_${lbl}_${new Date().getFullYear()}.csv`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
@@ -490,10 +496,10 @@ function renderWealth() {
 function renderDating() {
   const makeCard = (tag, tit, bud, note, isFree) =>
     `<div class="dc">
-      ${isFree ? '<span class="ftag">FREE</span>' : `<div class="dtag">${tag}</div>`}
-      <div class="dtit">${tit}</div>
-      ${(!isFree || bud !== '$0') ? `<div class="dbud">${bud}</div>` : ''}
-      <div class="dnote">${note}</div>
+      ${isFree ? '<span class="ftag">FREE</span>' : `<div class="dtag">${escapeHTML(tag)}</div>`}
+      <div class="dtit">${escapeHTML(tit)}</div>
+      ${(!isFree || bud !== '$0') ? `<div class="dbud">${escapeHTML(bud)}</div>` : ''}
+      <div class="dnote">${escapeHTML(note)}</div>
     </div>`;
 
   document.getElementById('dbudg').innerHTML = DATING_BUDGET.map(d => makeCard(d.tag, d.tit, d.bud, d.note, false)).join('');
@@ -515,13 +521,13 @@ function renderGhana() {
       <div class="bch">
         <div class="bchl">
           <span aria-hidden="true" style="font-size:15px">🌍</span>
-          <span class="bcname" style="color:#f87171">${it.n}</span>
+          <span class="bcname" style="color:#f87171">${escapeHTML(it.n)}</span>
         </div>
         <span class="bctot">$${it.bw}/BW</span>
       </div>
       <div style="padding:10px 14px">
-        <div style="font-size:11px;color:var(--muted);margin-bottom:4px">${it.nt}</div>
-        <div style="font-size:12px;font-weight:600">$${Math.round(it.bw * 26).toLocaleString()}/yr</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:4px">${escapeHTML(it.nt)}</div>
+        <div style="font-size:12px;font-weight:600">$${Math.round(it.bw * PERIODS_PER_YEAR).toLocaleString()}/yr</div>
       </div>
     </div>`
   ).join('');
@@ -531,8 +537,8 @@ function renderGhana() {
     `<div style="display:flex;gap:10px;align-items:flex-start">
       <div style="width:30px;height:30px;border-radius:8px;background:rgba(248,113,113,.12);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0" aria-hidden="true">${p.e}</div>
       <div>
-        <div style="font-size:12px;font-weight:600;margin-bottom:2px">${p.t}</div>
-        <div style="font-size:10px;color:var(--muted);line-height:1.4">${p.d}</div>
+        <div style="font-size:12px;font-weight:600;margin-bottom:2px">${escapeHTML(p.t)}</div>
+        <div style="font-size:10px;color:var(--muted);line-height:1.4">${escapeHTML(p.d)}</div>
       </div>
     </div>`
   ).join('');
@@ -542,8 +548,8 @@ function renderGhana() {
 function renderRoadmap() {
   const el = document.getElementById('rgrid');
   el.innerHTML = ROADMAP_PHASES.map(p => {
-    const items = p.items.map(i => `<div class="rit"><div class="rd ${p.d}" aria-hidden="true"></div><span>${i}</span></div>`).join('');
-    return `<div class="rc"><div class="rph" style="color:${p.c}">${p.ph}</div>${items}</div>`;
+    const items = p.items.map(i => `<div class="rit"><div class="rd ${p.d}" aria-hidden="true"></div><span>${escapeHTML(i)}</span></div>`).join('');
+    return `<div class="rc"><div class="rph" style="color:${p.c}">${escapeHTML(p.ph)}</div>${items}</div>`;
   }).join('');
 }
 
@@ -612,6 +618,12 @@ function registerSW() {
 
 // ─── Init ─────────────────────────────────────────────────────────────────────
 function init() {
+  // Validate S subtotals match their items (dev guard — warns if data.js drifts)
+  S.forEach(s => {
+    const computed = roundMoney(s.items.reduce((a, b) => a + b.bw, 0));
+    if (computed !== s.sub) console.warn(`Budget mismatch in "${s.id}": sub=${s.sub}, computed=${computed}`);
+  });
+
   // Restore persisted state
   loadChecklist();
 
@@ -634,6 +646,7 @@ function init() {
   renderDonut();
   renderBars();
   renderBudgetGrid();
+  initHIEditors(); // set up delegation once after bgrid is in DOM
   renderTable();
   renderWealth();
   renderDating();
@@ -677,6 +690,16 @@ function init() {
 
   // Set up tab keyboard navigation
   initTabKeyboard();
+
+  // Populate data-print-date on the active section for print.css header
+  window.addEventListener('beforeprint', () => {
+    const active = document.querySelector('.sec.on');
+    if (active) active.setAttribute('data-print-date', new Date().toLocaleDateString('en-US'));
+  });
+  window.addEventListener('afterprint', () => {
+    const active = document.querySelector('.sec.on');
+    if (active) active.removeAttribute('data-print-date');
+  });
 
   // Register service worker
   registerSW();

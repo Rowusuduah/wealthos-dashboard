@@ -65,6 +65,7 @@ function todayISO() {
 function txnsForPeriod(period) {
   return TXN.filter(t => {
     const d = new Date(t.date + 'T00:00:00');
+    if (isNaN(d.getTime())) return false; // skip transactions with malformed dates
     return d >= period.start && d <= period.end;
   });
 }
@@ -309,7 +310,8 @@ function renderTrackerChart(txns) {
       </div>
       <div class="tcattrack"
         role="meter" aria-label="${escapeHTML(s.l)}: $${actual.toFixed(2)} of $${planned.toFixed(2)} planned"
-        aria-valuenow="${actual.toFixed(2)}" aria-valuemin="0" aria-valuemax="${planned.toFixed(2)}">
+        aria-valuenow="${actual.toFixed(2)}" aria-valuemin="0" aria-valuemax="${planned.toFixed(2)}"
+        aria-valuetext="$${actual.toFixed(2)} of $${planned.toFixed(2)} planned (${pct.toFixed(0)}%)">
         <div class="tcatplan-bar" style="width:${planPct}%"></div>
         <div class="tcatact-bar"  style="width:${actPct}%;background:${barCol}"></div>
       </div>
@@ -372,6 +374,38 @@ function renderTrackerInsights(period, txns) {
 // ─── Render: Transaction Log ──────────────────────────────────────────────────
 function renderTrackerLog(txns) {
   const el = document.getElementById('tracker-log');
+
+  // Set up delegated click listener once — survives innerHTML replacement
+  if (!el._delegated) {
+    el._delegated = true;
+    el.addEventListener('click', e => {
+      const editBtn = e.target.closest('.tlog-edit');
+      if (editBtn) { populateFormForEdit(editBtn.dataset.id); return; }
+
+      const delBtn = e.target.closest('.tlog-del');
+      if (delBtn) {
+        const txn   = TXN.find(t => t.id === delBtn.dataset.id);
+        const label = txn ? (txn.description || txn.date) : 'this transaction';
+        if (confirm(`Delete "${label}"?`)) {
+          if (editingTxnId === delBtn.dataset.id) {
+            editingTxnId = null;
+            const submitEl = document.getElementById('txn-submit');
+            const cancelEl = document.getElementById('txn-cancel');
+            if (submitEl) { submitEl.textContent = '+ Log Transaction'; submitEl.style.background = ''; }
+            if (cancelEl) cancelEl.style.display = 'none';
+          }
+          TXN = TXN.filter(t => t.id !== delBtn.dataset.id);
+          saveTXN();
+          renderTracker();
+        }
+        return;
+      }
+
+      const expBtn = e.target.closest('#tracker-export-btn');
+      if (expBtn) exportTransactionsCSV();
+    });
+  }
+
   if (txns.length === 0) {
     el.innerHTML = '<p class="tno-txn">No transactions logged for this period yet.</p>';
     return;
@@ -416,32 +450,6 @@ function renderTrackerLog(txns) {
       <button class="vtb" id="tracker-export-btn" style="font-size:11px;padding:5px 12px">↓ Export CSV</button>
     </div>`;
 
-  el.querySelectorAll('.tlog-edit').forEach(btn => {
-    btn.addEventListener('click', () => populateFormForEdit(btn.dataset.id));
-  });
-
-  el.querySelectorAll('.tlog-del').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const txn   = TXN.find(t => t.id === btn.dataset.id);
-      const label = txn ? (txn.description || txn.date) : 'this transaction';
-      if (confirm(`Delete "${label}"?`)) {
-        // If deleting the transaction currently being edited, reset form
-        if (editingTxnId === btn.dataset.id) {
-          editingTxnId = null;
-          const submitEl = document.getElementById('txn-submit');
-          const cancelEl = document.getElementById('txn-cancel');
-          if (submitEl) { submitEl.textContent = '+ Log Transaction'; submitEl.style.background = ''; }
-          if (cancelEl) cancelEl.style.display = 'none';
-        }
-        TXN = TXN.filter(t => t.id !== btn.dataset.id);
-        saveTXN();
-        renderTracker();
-      }
-    });
-  });
-
-  const expBtn = document.getElementById('tracker-export-btn');
-  if (expBtn) expBtn.addEventListener('click', exportTransactionsCSV);
 }
 
 // ─── Export transactions as CSV ───────────────────────────────────────────────
@@ -449,9 +457,10 @@ function exportTransactionsCSV() {
   const sorted = [...TXN].sort((a,b) => a.date.localeCompare(b.date));
   let csv = 'Date,Type,Amount,Category,Description\n';
   sorted.forEach(t => {
-    const desc = (t.description || '').replace(/,/g, ';').replace(/"/g, "'");
-    const cat  = t.category;
-    csv += `${t.date},${t.type},$${t.amount.toFixed(2)},${cat},"${desc}"\n`;
+    // RFC 4180: escape double-quotes by doubling them; wrap fields in quotes
+    const desc = (t.description || '').replace(/"/g, '""');
+    const cat  = t.category.replace(/"/g, '""');
+    csv += `${t.date},${t.type},"$${t.amount.toFixed(2)}","${cat}","${desc}"\n`;
   });
   const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
   const url  = URL.createObjectURL(blob);
