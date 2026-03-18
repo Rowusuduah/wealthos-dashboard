@@ -78,6 +78,36 @@ function spendByCategory(txns) {
   return map;
 }
 
+// ─── Period Notes ─────────────────────────────────────────────────────────────
+const _noteTimers = {};
+
+function renderTrackerNotes(period) {
+  const el = document.getElementById('tracker-notes-wrap');
+  if (!el) return;
+  const key   = `wealthos_notes_${period.num}`;
+  const saved = (() => { try { return localStorage.getItem(key) || ''; } catch(e) { return ''; } })();
+
+  el.innerHTML = `
+    <div class="card" style="padding:12px 16px">
+      <div class="card-title" style="margin-bottom:6px">Period notes — ${escapeHTML(period.label)}</div>
+      <textarea id="tracker-note-area" class="txn-inp" rows="2"
+        placeholder="Jot anything notable this pay period…"
+        maxlength="500" style="resize:vertical;min-height:56px;line-height:1.5"
+        aria-label="Notes for ${escapeHTML(period.label)}"
+      >${escapeHTML(saved)}</textarea>
+      <div style="font-size:10px;color:var(--muted);margin-top:4px;text-align:right" id="tracker-note-count">${saved.length}/500</div>
+    </div>`;
+
+  const ta = document.getElementById('tracker-note-area');
+  ta.addEventListener('input', () => {
+    document.getElementById('tracker-note-count').textContent = `${ta.value.length}/500`;
+    clearTimeout(_noteTimers[key]);
+    _noteTimers[key] = setTimeout(() => {
+      try { localStorage.setItem(key, ta.value.slice(0, 500)); } catch(e) {}
+    }, 500);
+  });
+}
+
 // ─── Render: Period Header ────────────────────────────────────────────────────
 function renderTrackerPeriodHeader(period) {
   const el = document.getElementById('tracker-period-header');
@@ -499,12 +529,23 @@ function renderTrackerBackup() {
 }
 
 function backupData() {
+  // Collect all period notes keys
+  const notes = {};
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith('wealthos_notes_')) notes[k] = localStorage.getItem(k);
+    }
+  } catch(e) {}
+
   const data = {
-    version:         1,
+    version:         2,
     exported:        new Date().toISOString(),
     transactions:    TXN,
     checklist:       localStorage.getItem('wealthos_checklist'),
     healthInsurance: localStorage.getItem('wealthos_health_insurance'),
+    networth:        localStorage.getItem('wealthos_networth'),
+    periodNotes:     notes,
   };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url  = URL.createObjectURL(blob);
@@ -528,6 +569,8 @@ function restoreData(file) {
       saveTXN();
       if (data.checklist)       localStorage.setItem('wealthos_checklist', data.checklist);
       if (data.healthInsurance) localStorage.setItem('wealthos_health_insurance', data.healthInsurance);
+      if (data.networth)        localStorage.setItem('wealthos_networth', data.networth);
+      if (data.periodNotes)     Object.entries(data.periodNotes).forEach(([k, v]) => { try { localStorage.setItem(k, v); } catch(e) {} });
       renderTracker();
     } catch(err) {
       alert('Invalid backup file. Please use a WealthOS backup .json file.');
@@ -542,6 +585,7 @@ function renderTracker() {
   const txns   = txnsForPeriod(period);
   renderTrackerPeriodHeader(period);
   renderTrackerKPIs(txns);
+  renderTrackerNotes(period);
   renderTrackerChart(txns);
   renderTrackerInsights(period, txns);
   renderTrackerLog(txns);

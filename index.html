@@ -37,6 +37,7 @@
       <button id="tab-roadmap"   class="ntab"    role="tab" data-tab="roadmap"   aria-selected="false" aria-controls="roadmap">Roadmap</button>
       <button id="tab-checklist" class="ntab"    role="tab" data-tab="checklist" aria-selected="false" aria-controls="checklist">Checklist</button>
       <button id="tab-tracker"   class="ntab"    role="tab" data-tab="tracker"   aria-selected="false" aria-controls="tracker">Tracker</button>
+      <button id="tab-networth"  class="ntab"    role="tab" data-tab="networth"  aria-selected="false" aria-controls="networth">Net Worth</button>
     </div>
   </nav>
 
@@ -44,16 +45,19 @@
 
     <!-- ── Overview ───────────────────────────────────────────────────────── -->
     <section class="sec on" id="overview" role="tabpanel" aria-labelledby="tab-overview" aria-hidden="false" tabindex="-1">
-      <div style="padding:8px 0 20px">
-        <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">
-          Personal Finance Dashboard · Tampa FL · Age 29 · OPT F-1
+      <div style="padding:8px 0 20px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+        <div>
+          <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">
+            Personal Finance Dashboard · Tampa FL · Age 29 · OPT F-1
+          </div>
+          <h1 style="font-size:clamp(26px,4vw,44px);font-weight:800;line-height:1.05;margin-bottom:6px">
+            Your Wealth<br>Starts Here.
+          </h1>
+          <p style="font-size:13px;color:var(--muted)">
+            $87,000 salary · <span style="color:var(--green);font-weight:600">No FL state tax · No FICA on OPT</span> · 26 pay periods · June 2026
+          </p>
         </div>
-        <h1 style="font-size:clamp(26px,4vw,44px);font-weight:800;line-height:1.05;margin-bottom:6px">
-          Your Wealth<br>Starts Here.
-        </h1>
-        <p style="font-size:13px;color:var(--muted)">
-          $87,000 salary · <span style="color:var(--green);font-weight:600">No FL state tax · No FICA on OPT</span> · 26 pay periods · June 2026
-        </p>
+        <button id="btnPrintOverview" class="tact-btn" style="white-space:nowrap;flex-shrink:0;margin-top:8px" aria-label="Print or save overview as PDF">📄 Save PDF</button>
       </div>
 
       <div class="kgrid" id="kgrid" aria-label="Key financial metrics"></div>
@@ -214,6 +218,9 @@
       <!-- KPI summary -->
       <div class="kgrid" id="tracker-kpis" aria-label="Pay period spending summary"></div>
 
+      <!-- Period notes — auto-saved per pay period -->
+      <div id="tracker-notes-wrap" style="margin-bottom:14px"></div>
+
       <!-- Insights strip -->
       <div class="card" style="margin-bottom:14px;padding:12px 16px">
         <div class="card-title" style="margin-bottom:8px">Pulse</div>
@@ -245,15 +252,42 @@
 
     </section>
 
+    <!-- ── Net Worth ─────────────────────────────────────────────────────────── -->
+    <section class="sec" id="networth" role="tabpanel" aria-labelledby="tab-networth" aria-hidden="true" tabindex="-1">
+      <!-- KPI summary -->
+      <div class="kgrid" id="nw-kpis" style="margin-bottom:16px" aria-label="Net worth summary"></div>
+
+      <div class="g2" style="margin-bottom:14px">
+        <!-- Add snapshot form -->
+        <div class="card fi">
+          <div class="card-title">Add snapshot</div>
+          <div id="nw-form-container" style="margin-top:10px"></div>
+        </div>
+
+        <!-- Latest breakdown -->
+        <div class="card fi">
+          <div class="card-title">Latest breakdown</div>
+          <div id="nw-breakdown" class="blist" style="margin-top:10px"></div>
+        </div>
+      </div>
+
+      <!-- History -->
+      <div class="card">
+        <div class="card-title">Snapshot history</div>
+        <div id="nw-history" style="margin-top:8px"></div>
+      </div>
+    </section>
+
   </main>
 
   <footer style="text-align:center;padding:32px 16px;font-size:10px;color:var(--muted);letter-spacing:.05em;position:relative;z-index:1" role="contentinfo">
     Balance $0.00 · All figures verified · Tampa FL 2026 · $2,805.77 net per paycheck
   </footer>
 
-  <!-- Scripts: data first, then tracker, then app logic -->
+  <!-- Scripts: data first, then tracker, then networth, then app logic -->
   <script src="js/data.js" defer></script>
   <script src="js/tracker.js" defer></script>
+  <script src="js/networth.js" defer></script>
   <script src="js/app.js" defer></script>
 
 </body>

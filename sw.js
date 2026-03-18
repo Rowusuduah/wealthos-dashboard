@@ -1,7 +1,7 @@
 // WealthOS Service Worker — Cache-first strategy for offline support
 'use strict';
 
-const CACHE_NAME = 'wealthos-v2';
+const CACHE_NAME = 'wealthos-v3';
 const ASSETS = [
   '/',           // root path — catches http://host/ without index.html
   '/index.html',
@@ -9,6 +9,7 @@ const ASSETS = [
   '/css/print.css',
   '/js/data.js',
   '/js/tracker.js',
+  '/js/networth.js',
   '/js/app.js',
   '/manifest.json',
   '/icons/icon-192.svg',

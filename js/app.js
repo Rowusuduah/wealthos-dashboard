@@ -93,6 +93,10 @@ function switchTab(id) {
   if (id === 'overview') {
     renderOverviewTrackerPulse();
   }
+  // Refresh net worth on tab switch (picks up data restored from backup)
+  if (id === 'networth' && typeof renderNetWorth === 'function') {
+    renderNetWorth();
+  }
 }
 
 // Arrow-key navigation within tablist
@@ -640,6 +644,9 @@ function init() {
   // Init tracker (loads transactions, wires form, renders tracker)
   if (typeof initTracker === 'function') initTracker();
 
+  // Init net worth tracker
+  if (typeof initNetWorth === 'function') initNetWorth();
+
   // Render all sections
   renderKPIs();
   renderOverviewTrackerPulse();
@@ -677,12 +684,16 @@ function init() {
     });
   }
 
-  // Export CSV + Print
+  // Export CSV + Print (Full Table tab)
   const csvBtn = document.getElementById('btnExportCSV');
   if (csvBtn) csvBtn.addEventListener('click', exportCSV);
 
   const printBtn = document.getElementById('btnPrint');
   if (printBtn) printBtn.addEventListener('click', () => window.print());
+
+  // Save PDF (Overview tab) — print CSS shows only .sec.on, so switch to overview first
+  const ovPdfBtn = document.getElementById('btnPrintOverview');
+  if (ovPdfBtn) ovPdfBtn.addEventListener('click', () => window.print());
 
   // Search input
   const sinp = document.getElementById('sinp');
