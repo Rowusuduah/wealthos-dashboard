@@ -19,6 +19,47 @@
   --pink:   #f472b6;
 }
 
+/* ─── Light Mode ─────────────────────────────────────────────────────────── */
+body.light {
+  --bg:     #f0f2f8;
+  --surf:   #ffffff;
+  --surf2:  #e8eaf2;
+  --border: rgba(0,0,0,0.08);
+  --brig:   rgba(0,0,0,0.14);
+  --text:   #0c0c1e;
+  --muted:  #5a5a78;
+  --green:  #16a34a;
+  --purple: #7c3aed;
+  --orange: #ea580c;
+  --gold:   #d97706;
+  --red:    #dc2626;
+  --blue:   #2563eb;
+  --teal:   #0d9488;
+  --pink:   #db2777;
+}
+
+body.light::before {
+  background-image:
+    linear-gradient(rgba(0,0,0,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.025) 1px, transparent 1px);
+}
+
+/* ─── Theme Toggle Button ────────────────────────────────────────────────── */
+#theme-toggle {
+  margin-left: auto;
+  background: var(--surf2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 13px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .15s, color .15s;
+  flex-shrink: 0;
+}
+#theme-toggle:hover { background: var(--brig); }
+
 /* ─── Base ───────────────────────────────────────────────────────────────── */
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -106,6 +147,7 @@ input:-webkit-autofill:focus {
   min-height: 50px;
   flex-wrap: wrap;
 }
+body.light #nav { background: rgba(240,242,248,0.95); }
 
 /* Backdrop-filter with progressive enhancement fallback */
 @supports (backdrop-filter: blur(1px)) {
@@ -113,6 +155,9 @@ input:-webkit-autofill:focus {
 }
 @supports not (backdrop-filter: blur(1px)) {
   #nav { background: rgba(12,12,18,0.98); }
+}
+@supports not (backdrop-filter: blur(1px)) {
+  body.light #nav { background: rgba(240,242,248,0.98); }
 }
 
 #navbrand {

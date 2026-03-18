@@ -1,5 +1,34 @@
 'use strict';
 
+// ─── Theme ───────────────────────────────────────────────────────────────────
+(function initTheme() {
+  const saved = localStorage.getItem('wealthos_theme');
+  const hour  = new Date().getHours();
+  // Day = 6am–7pm (6–18), Night = 7pm–6am
+  const autoDark = hour < 6 || hour >= 19;
+  const useDark  = saved ? saved === 'dark' : autoDark;
+
+  if (!useDark) document.body.classList.add('light');
+
+  function updateBtn() {
+    const btn = document.getElementById('theme-toggle');
+    if (!btn) return;
+    const isLight = document.body.classList.contains('light');
+    btn.textContent = isLight ? '🌙 Dark' : '☀️ Light';
+    btn.setAttribute('aria-label', isLight ? 'Switch to dark mode' : 'Switch to light mode');
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    updateBtn();
+    document.getElementById('theme-toggle').addEventListener('click', () => {
+      document.body.classList.toggle('light');
+      const isLight = document.body.classList.contains('light');
+      localStorage.setItem('wealthos_theme', isLight ? 'light' : 'dark');
+      updateBtn();
+    });
+  });
+})();
+
 // ─── State ──────────────────────────────────────────────────────────────────
 let budgetView = 'bw';
 let tableView  = 'bw';
