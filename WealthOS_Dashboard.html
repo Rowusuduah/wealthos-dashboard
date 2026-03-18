@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wealth OS — Tampa 2026</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0c0c12;--surf:#14141e;--surf2:#1c1c28;
+  --border:rgba(255,255,255,0.07);--brig:rgba(255,255,255,0.13);
+  --text:#ededf5;--muted:#6a6a80;
+  --green:#4ade80;--purple:#a78bfa;--orange:#fb923c;
+  --gold:#fbbf24;--red:#f87171;--blue:#60a5fa;--teal:#2dd4bf;--pink:#f472b6;
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,0.012) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.012) 1px,transparent 1px);background-size:44px 44px;pointer-events:none;z-index:0}
+#nav{position:sticky;top:0;z-index:50;background:rgba(12,12,18,0.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 16px;display:flex;align-items:center;gap:2px;min-height:50px;flex-wrap:wrap}
+#navbrand{font-size:13px;font-weight:700;color:var(--green);letter-spacing:.06em;margin-right:10px;white-space:nowrap}
+.ntab{font-size:11px;font-weight:500;color:var(--muted);background:none;border:none;cursor:pointer;padding:6px 10px;border-radius:6px;transition:all .15s;white-space:nowrap}
+.ntab:hover{color:var(--text);background:var(--surf2)}.ntab.on{color:var(--text);background:var(--surf2)}
+.sec{display:none;padding:20px 16px;max-width:1100px;margin:0 auto;position:relative;z-index:1}.sec.on{display:block}
+.card{background:var(--surf);border:1px solid var(--border);border-radius:14px;padding:18px;transition:border-color .2s}.card:hover{border-color:var(--brig)}
+.card-title{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;font-weight:600}
+.kgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:20px}
+.kpi{background:var(--surf);border:1px solid var(--border);border-radius:12px;padding:14px;transition:all .2s}.kpi:hover{border-color:var(--brig);transform:translateY(-1px)}
+.kl{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}.kv{font-size:21px;font-weight:700}.ks{font-size:10px;color:var(--muted);margin-top:3px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+@media(max-width:600px){.g2{grid-template-columns:1fr}}
+.donut-inner{display:flex;align-items:center;gap:18px}
+.dleg{flex:1;display:flex;flex-direction:column;gap:6px}
+.dli{display:flex;align-items:center;gap:7px;font-size:11px}.dlid{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.dlin{flex:1;color:var(--muted)}.dliv{font-size:11px;font-weight:600}.dlip{font-size:10px;color:var(--muted);min-width:34px;text-align:right}
+.blist{display:flex;flex-direction:column;gap:9px}
+.bitem .bh{display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px}
+.bname{color:var(--muted)}.bamnt{font-weight:600}
+.btrack{height:4px;background:rgba(255,255,255,0.06);border-radius:99px;overflow:hidden}.bfill{height:100%;border-radius:99px}
+.vtog{display:flex;gap:3px;background:var(--surf);border:1px solid var(--border);border-radius:7px;padding:3px;margin-bottom:16px;width:fit-content}
+.vtb{font-size:11px;font-weight:500;color:var(--muted);background:none;border:none;cursor:pointer;padding:4px 11px;border-radius:5px;transition:all .15s}.vtb.on{background:var(--surf2);color:var(--text)}
+.bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.bcard{background:var(--surf);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:all .2s}.bcard:hover{border-color:var(--brig);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.bch{padding:12px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.bchl{display:flex;align-items:center;gap:8px}.bcname{font-size:13px;font-weight:700}.bcpct{font-size:10px;color:var(--muted);background:var(--surf2);padding:1px 6px;border-radius:4px}.bctot{font-size:13px;font-weight:700;color:var(--green)}
+.bcbar{height:2px;background:linear-gradient(90deg,var(--brig),transparent);margin:0 14px 6px}
+.bitem2{display:flex;align-items:flex-start;justify-content:space-between;padding:5px 14px;transition:background .1s}.bitem2:hover{background:rgba(255,255,255,.02)}
+.biml{display:flex;align-items:flex-start;gap:7px;flex:1}.bimd{width:5px;height:5px;border-radius:50%;background:var(--border);flex-shrink:0;margin-top:4px}.bimd.b{background:var(--purple)}
+.bimn{font-size:11px;color:var(--muted);line-height:1.3}.bimno{font-size:9px;color:rgba(106,106,128,.7);margin-top:1px}.bima{font-size:12px;font-weight:600;flex-shrink:0;padding-left:8px}.bima.z{color:var(--red);opacity:.7}
+.sbar{position:relative;margin-bottom:14px}
+.sinp{width:100%;padding:9px 12px 9px 32px;background:var(--surf);border:1px solid var(--border);border-radius:9px;color:var(--text);font-size:12px;outline:none;transition:border-color .2s}.sinp:focus{border-color:var(--brig)}.sico{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;pointer-events:none}
+.twrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:11px}
+thead th{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:7px 10px;border-bottom:1px solid var(--border);text-align:right;font-weight:600}
+thead th:first-child{text-align:left}
+tbody tr{border-bottom:1px solid rgba(255,255,255,.025)}tbody tr:hover{background:rgba(255,255,255,.018)}
+tbody td{padding:7px 10px;color:var(--muted);text-align:right}tbody td:first-child{text-align:left;color:var(--text)}
+.sr td{font-weight:700;background:var(--surf2);color:var(--text)}.tg{color:var(--green)!important;font-weight:700}.tm{color:var(--muted)!important;font-size:10px!important}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:18px}
+.pc{background:var(--surf);border:1px solid var(--border);border-radius:12px;padding:14px}
+.pcl{font-size:10px;color:var(--muted);margin-bottom:3px}.pca{font-size:19px;font-weight:700;margin-bottom:2px}.pcs{font-size:10px;color:var(--muted);margin-bottom:8px}
+.pbar{height:3px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden}.pfill{height:100%;border-radius:99px}.pcpct{font-size:9px;color:var(--muted);margin-top:4px}
+.tl{position:relative;padding-left:20px}.tl::before{content:'';position:absolute;left:0;top:6px;bottom:6px;width:1px;background:var(--border)}
+.tli{position:relative;margin-bottom:18px}.tli::before{content:'';position:absolute;left:-24px;top:5px;width:8px;height:8px;border-radius:50%;border:1.5px solid var(--brig);background:var(--bg);transition:all .2s}.tli:hover::before{background:var(--green);border-color:var(--green);box-shadow:0 0 8px var(--green)}
+.tla{font-size:9px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px}.tlp{font-size:18px;font-weight:700;color:var(--green);margin-bottom:2px}.tls{font-size:11px;color:var(--muted)}
+.dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin-bottom:24px}
+.dc{background:var(--surf);border:1px solid var(--border);border-radius:12px;padding:14px;transition:all .2s}.dc:hover{border-color:var(--brig)}
+.dtag{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--orange);margin-bottom:6px}.dtit{font-size:13px;font-weight:600;margin-bottom:3px}.dbud{font-size:14px;font-weight:700;color:var(--green)}.dnote{font-size:10px;color:var(--muted);margin-top:4px;line-height:1.4}
+.ftag{display:inline-block;background:rgba(74,222,128,.1);color:var(--green);font-size:9px;padding:1px 6px;border-radius:4px;margin-bottom:4px}
+.ghl{background:linear-gradient(135deg,rgba(248,113,113,.07),rgba(248,113,113,.02));border:1px solid rgba(248,113,113,.2);border-radius:12px;padding:14px;margin-bottom:18px}
+.ghlt{font-size:14px;font-weight:700;color:var(--red);margin-bottom:8px}
+.ghpills{display:flex;flex-wrap:wrap;gap:6px}.ghp{font-size:10px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:5px;padding:3px 8px;color:var(--muted)}.ghp strong{color:var(--text)}
+.rgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.rc{background:var(--surf);border:1px solid var(--border);border-radius:12px;padding:14px;transition:all .2s}.rc:hover{border-color:var(--brig)}
+.rph{font-size:9px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;font-weight:600}
+.rit{display:flex;align-items:flex-start;gap:7px;font-size:11px;color:var(--muted);line-height:1.4;margin-bottom:6px}.rd{width:4px;height:4px;border-radius:50%;background:var(--green);flex-shrink:0;margin-top:5px}.rd.o{background:var(--orange)}.rd.p{background:var(--purple)}.rd.t{background:var(--teal)}
+.clist{display:flex;flex-direction:column;gap:7px}
+.ci{display:flex;align-items:flex-start;gap:9px;background:var(--surf);border:1px solid var(--border);border-radius:9px;padding:11px 12px;transition:all .2s;cursor:pointer}.ci:hover{border-color:var(--brig)}.ci.done{opacity:.5;border-color:rgba(74,222,128,.15)}
+.cbox{width:17px;height:17px;border-radius:4px;border:1.5px solid var(--brig);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;transition:all .2s}.ci.done .cbox{background:var(--green);border-color:var(--green)}
+.ctick{display:none;font-size:9px;font-weight:800;color:#000}.ci.done .ctick{display:block}
+.cc{flex:1}.ctit{font-size:12px;font-weight:600;margin-bottom:2px}.cdesc{font-size:10px;color:var(--muted);line-height:1.4}
+.ctag{font-size:8px;letter-spacing:.07em;text-transform:uppercase;padding:2px 6px;border-radius:4px;flex-shrink:0;margin-top:1px;font-weight:600}
+.tu{background:rgba(248,113,113,.12);color:var(--red)}.t1{background:rgba(251,191,36,.12);color:var(--gold)}.t2{background:rgba(167,139,250,.12);color:var(--purple)}.t3{background:rgba(74,222,128,.12);color:var(--green)}
+.cpbar{height:3px;background:rgba(255,255,255,.06);border-radius:99px;overflow:hidden;max-width:280px;margin:6px 0}.cpfill{height:100%;background:var(--green);border-radius:99px;transition:width .4s}
+.accel{background:var(--surf);border:1px solid var(--border);border-radius:14px;padding:16px;margin-top:14px}
+.acrow{display:flex;gap:20px;flex-wrap:wrap;align-items:center}
+.acn .acl{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}.acn .acv{font-size:19px;font-weight:700}
+.arr{color:var(--muted);font-size:16px;display:flex;align-items:center}
+.acnote{font-size:10px;color:var(--muted);flex:1;min-width:160px;line-height:1.5}
+@keyframes fadein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.fi{animation:fadein .4s both}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--green);display:inline-block;margin-right:6px;animation:pulse 2s infinite}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--brig);border-radius:2px}
+.sh{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;font-weight:600}
+</style>
+</head>
+<body>
+<div id="nav">
+  <span id="navbrand"><span class="dot"></span>Wealth OS</span>
+  <button class="ntab on" onclick="show('overview',this)">Overview</button>
+  <button class="ntab" onclick="show('budget',this)">Budget</button>
+  <button class="ntab" onclick="show('table',this)">Full Table</button>
+  <button class="ntab" onclick="show('wealth',this)">Wealth</button>
+  <button class="ntab" onclick="show('dating',this)">Relationship</button>
+  <button class="ntab" onclick="show('ghana',this)">Ghana</button>
+  <button class="ntab" onclick="show('roadmap',this)">Roadmap</button>
+  <button class="ntab" onclick="show('checklist',this)">Checklist</button>
+</div>
+
+<div class="sec on" id="overview">
+  <div style="padding:8px 0 20px">
+    <div style="font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Personal Finance Dashboard · Tampa FL · Age 29 · OPT F-1</div>
+    <div style="font-size:clamp(26px,4vw,44px);font-weight:800;line-height:1.05;margin-bottom:6px">Your Wealth<br>Starts Here.</div>
+    <div style="font-size:13px;color:var(--muted)">$87,000 salary · <span style="color:var(--green);font-weight:600">No FL state tax · No FICA on OPT</span> · 26 pay periods · June 2026</div>
+  </div>
+  <div class="kgrid" id="kgrid"></div>
+  <div class="g2">
+    <div class="card fi"><div class="card-title">Allocation breakdown</div><div class="donut-inner"><svg id="donutSvg" width="110" height="110" viewBox="0 0 110 110" style="flex-shrink:0"></svg><div class="dleg" id="dleg"></div></div></div>
+    <div class="card fi"><div class="card-title">Spending by category</div><div class="blist" id="blist"></div></div>
+  </div>
+  <div class="accel"><div class="card-title">Year 2 acceleration — when emergency fund + H1B complete</div>
+    <div class="acrow">
+      <div class="acn"><div class="acl">Year 1 investing/yr</div><div class="acv" style="color:var(--muted)">$7,233</div></div>
+      <div class="arr">→</div>
+      <div class="acn"><div class="acl">Year 2+ investing/yr</div><div class="acv" style="color:var(--green)">$16,723</div></div>
+      <div class="arr">→</div>
+      <div class="acn"><div class="acl">Savings rate yr 2+</div><div class="acv" style="color:var(--green)">35.9%</div></div>
+      <div class="acnote">Emergency fund ~Month 23. H1B ~Month 13-18. Redirect <strong style="color:var(--text)">+$365/BW</strong> to brokerage. Wealth building accelerates massively.</div>
+    </div>
+  </div>
+</div>
+
+<div class="sec" id="budget">
+  <div class="sbar"><span class="sico">⌕</span><input class="sinp" type="text" placeholder="Search items..." id="sinp" oninput="filterB()"></div>
+  <div class="vtog"><button class="vtb on" onclick="setBV('bw',this)">Biweekly</button><button class="vtb" onclick="setBV('mo',this)">Monthly</button><button class="vtb" onclick="setBV('yr',this)">Annual</button></div>
+  <div class="bgrid" id="bgrid"></div>
+</div>
+
+<div class="sec" id="table">
+  <div class="vtog"><button class="vtb on" onclick="setTV('bw',this)">Biweekly</button><button class="vtb" onclick="setTV('mo',this)">Monthly</button><button class="vtb" onclick="setTV('yr',this)">Annual</button></div>
+  <div class="card"><div class="twrap"><table id="ftable"></table></div></div>
+</div>
+
+<div class="sec" id="wealth">
+  <div class="pgrid" id="pgrid"></div>
+  <div class="g2" style="margin-bottom:14px">
+    <div class="card" style="grid-column:1/-1"><div class="card-title">Portfolio projection — 7% avg annual return</div><div class="tl" id="tl" style="margin-top:8px"></div></div>
+  </div>
+  <div class="card"><div class="card-title">401k &amp; HSA — pre-tax, not in net budget — ask HR Day 1</div>
+    <div style="font-size:11px;color:var(--muted);line-height:1.7;max-width:640px">
+      <strong style="color:var(--text)">401k match:</strong> If employer matches 4% of $87K = <strong style="color:var(--green)">$3,480/yr FREE</strong>. Never appears in net take-home — HR deducts pre-tax. Contribute minimum to capture full match on Day 1. At 7% over 31 years = <strong style="color:var(--green)">+$380,000+</strong> at retirement.<br><br>
+      <strong style="color:var(--text)">HSA:</strong> If employer offers High-Deductible Health Plan, open an HSA immediately. Triple tax advantage: pre-tax contributions, tax-free growth, tax-free medical withdrawals. 2026 limit: $4,150/yr.
+    </div>
+  </div>
+</div>
+
+<div class="sec" id="dating">
+  <div class="kgrid" style="margin-bottom:20px">
+    <div class="kpi"><div class="kl">Dating/paycheck</div><div class="kv" style="color:var(--orange)">$175</div><div class="ks">6.2% of net</div></div>
+    <div class="kpi"><div class="kl">Annual cost</div><div class="kv">$2,836</div><div class="ks">excl ring & wedding</div></div>
+    <div class="kpi"><div class="kl">Ring fund/yr</div><div class="kv" style="color:var(--gold)">$1,300</div><div class="ks">ready ~age 32</div></div>
+    <div class="kpi"><div class="kl">Wedding fund/yr</div><div class="kv" style="color:var(--purple)">$650</div><div class="ks">target $8-12K</div></div>
+  </div>
+  <div class="sh">Budget breakdown</div><div class="dgrid" id="dbudg"></div>
+  <div class="sh">Annual occasions</div><div class="dgrid" id="docc"></div>
+  <div class="sh">Free &amp; cheap Tampa dates</div><div class="dgrid" id="dfree"></div>
+  <div class="sh">Marriage milestones</div><div class="dgrid" id="dmarr"></div>
+</div>
+
+<div class="sec" id="ghana">
+  <div class="ghl"><div class="ghlt">🌍 You carry 9 people. This is their lifeline.</div>
+    <div class="ghpills">
+      <div class="ghp"><strong>$295/BW</strong> total</div><div class="ghp"><strong>$7,670/yr</strong> annual</div>
+      <div class="ghp"><strong>10.5%</strong> of net</div><div class="ghp">Use <strong>Lemfi/Sendwave</strong> — fees 0-1%</div>
+      <div class="ghp"><strong>NEVER</strong> Western Union (5-8% fees)</div>
+      <div class="ghp">Drops to <strong>9.4%</strong> after emergency fund hits $1,500</div>
+    </div>
+  </div>
+  <div class="bgrid" id="ggrid"></div>
+  <div class="card" style="margin-top:14px"><div class="card-title">Long-term Ghana plan</div><div id="gplan" style="display:flex;flex-direction:column;gap:12px;margin-top:4px"></div></div>
+</div>
+
+<div class="sec" id="roadmap"><div class="rgrid" id="rgrid"></div></div>
+
+<div class="sec" id="checklist">
+  <div style="margin-bottom:14px">
+    <div style="font-size:9px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px">Progress</div>
+    <div class="cpbar"><div class="cpfill" id="cpfill"></div></div>
+    <div id="ccount" style="font-size:10px;color:var(--muted);margin-top:4px"></div>
+  </div>
+  <div class="clist" id="clist"></div>
+</div>
+
+<div style="text-align:center;padding:32px 16px;font-size:10px;color:var(--muted);letter-spacing:.05em;position:relative;z-index:1">Balance $0.00 · All figures verified · Tampa FL 2026 · $2,805.77 net per paycheck</div>
+
+<script>
+const NET=2805.77;
+const S=[
+  {id:"giving",l:"Giving",e:"🙏",c:"#a78bfa",items:[{n:"Tithe (10% of net)",bw:280.58,nt:"First fruits. Auto-transfer on payday."},{n:"Offering",bw:20,nt:"$10 every Sunday"}],sub:300.58},
+  {id:"housing",l:"Housing",e:"🏠",c:"#60a5fa",items:[{n:"Rent",bw:400,nt:"Half of $800/mo"},{n:"Electricity & Water",bw:100,nt:"Tampa avg ~$218/mo",b:1},{n:"Internet",bw:35,nt:"Half of ~$70/mo"}],sub:535},
+  {id:"transport",l:"Transport",e:"🚗",c:"#34d399",items:[{n:"Car Insurance",bw:127.50,nt:"Half of $255/mo"},{n:"Fuel",bw:46,nt:"$46 every 2 weeks"},{n:"Car Maintenance",bw:60,nt:"$1,560/yr oil, tires, repairs",b:1},{n:"Car Wash",bw:12.50,nt:"Half of $25/mo"}],sub:246},
+  {id:"subs",l:"Subscriptions",e:"📱",c:"#f472b6",items:[{n:"Phone Plan",bw:15,nt:"$30/mo ÷ 2"},{n:"Apple Music",bw:3.50,nt:"$7/mo ÷ 2"},{n:"ChatGPT",bw:10,nt:"$20/mo ÷ 2"},{n:"Claude",bw:10,nt:"$20/mo ÷ 2"},{n:"Google Subscription",bw:5,nt:"$10/mo ÷ 2"}],sub:43.50},
+  {id:"living",l:"Daily Living",e:"🛒",c:"#fb923c",items:[{n:"Groceries",bw:175,nt:"Walmart, Aldi, African stores",b:1},{n:"Household Supplies",bw:20,nt:"Cleaning, kitchen basics",b:1},{n:"Personal Care & Grooming",bw:40,nt:"Haircut, cologne, skincare",b:1},{n:"Clothing Fund",bw:50,nt:"Ross/TJ Maxx",b:1},{n:"Solo Dining Out",bw:30,nt:"~2 solo meals/week",b:1},{n:"Medical / Pharmacy",bw:35,nt:"Copays + dental/vision reserve",b:1},{n:"Health Insurance",bw:0,nt:"⚠️ Fill in on Day 1",b:1},{n:"Term Life Insurance ($500K)",bw:12.50,nt:"Policygenius/Haven Life"},{n:"Renters Insurance",bw:8,nt:"Lemonade or State Farm"},{n:"Gym / Fitness",bw:10,nt:"Planet Fitness $10/mo",b:1},{n:"Mental Health / Therapy",bw:15,nt:"1 session/mo",b:1},{n:"Miscellaneous",bw:30,nt:"Buffer. If unused → brokerage",b:1}],sub:425.50},
+  {id:"relationship",l:"Relationship",e:"💑",c:"#fb7185",items:[{n:"Dating Fund",bw:75,nt:"~$150/mo. Bayshore, Ybor, dinner",b:1},{n:"Special Occasions",bw:25,nt:"Birthday, Valentine's, anniversary",b:1},{n:"Engagement Ring Fund",bw:50,nt:"$1,300/yr → ring ~age 32",b:1},{n:"Wedding Fund",bw:25,nt:"$650/yr. Tampa wedding $8-12K",b:1}],sub:175},
+  {id:"explore",l:"Exploration",e:"🗺️",c:"#38bdf8",items:[{n:"Local Tampa Exploration",bw:25,nt:"Beaches, Ybor, Riverwalk",b:1},{n:"Travel Fund",bw:50,nt:"Miami, Orlando, Atlanta, trips",b:1}],sub:75},
+  {id:"ghana",l:"Ghana Family",e:"🌍",c:"#f87171",items:[{n:"Monthly Remittance",bw:150,nt:"$300/mo. Lemfi fees 0-1%",b:1},{n:"Ghana Flight Fund",bw:75,nt:"$1,950/yr. TPA→ACC ~$900-1,400",b:1},{n:"Family Emergency/Gift Fund",bw:25,nt:"School fees, medical, gifts",b:1},{n:"Sibling Development Fund",bw:15,nt:"Firstborn of 10",b:1},{n:"Emergency Ghana Travel",bw:30,nt:"Save to $1,500. Last-minute flights",b:1}],sub:295},
+  {id:"annual",l:"Annual Irregular",e:"📅",c:"#86efac",items:[{n:"Tax Filing — Sprintax NR",bw:6,nt:"~$150/yr. NOT TurboTax"},{n:"Car Registration FL",bw:3,nt:"~$75/yr"},{n:"Annual App Renewals",bw:5,nt:"Amazon Prime etc."},{n:"Immigration Attorney",bw:10,nt:"Annual check-in",b:1},{n:"CPA / Tax Advisor",bw:8,nt:"International tax specialist",b:1}],sub:32},
+  {id:"profdev",l:"Professional Dev",e:"🎓",c:"#86efac",items:[{n:"Courses, Books & Certs",bw:20,nt:"Udemy, Coursera. 10x ROI",b:1},{n:"Career Strategy Fund",bw:15,nt:"Job-hop readiness",b:1}],sub:35},
+  {id:"wealth",l:"Wealth Building",e:"📈",c:"#4ade80",items:[{n:"Emergency Fund → HYSA",bw:250,nt:"Target $15K ~23 months. 4-5% APY",b:1},{n:"H1B Legal Fund",bw:115,nt:"$3K by Month 12",b:1},{n:"Taxable Brokerage (fixed)",bw:150,nt:"VOO/VTI. Fidelity/Schwab",b:1},{n:"Additional Brokerage",bw:128.19,nt:"Every remaining dollar → index funds"}],sub:643.19},
+];
+const ML=[
+  {age:30,yr:1,p:"$18,521",s:"Foundation. Emergency $6.5K. H1B $3K."},
+  {age:31,yr:2,p:"$58,000",s:"H1B filed. Emergency done. +$365/BW investing."},
+  {age:32,yr:3,p:"$103,000",s:"Ring ready. First Ghana trip paid for."},
+  {age:33,yr:4,p:"$155,000",s:"Married. Wedding funded. Net worth ~$160K."},
+  {age:35,yr:6,p:"$272,000",s:"Home down payment ready."},
+  {age:40,yr:11,p:"$630,000",s:"Net worth $600K+. Ghana property owned."},
+  {age:50,yr:21,p:"$1,800,000",s:"Financial independence possible."},
+  {age:60,yr:31,p:"$4,300,000",s:"Retirement funded. Legacy secured."},
+];
+let bv='bw',tv='bw';
+function f(v,m){const mul=m==='mo'?26/12:m==='yr'?26:1;return '$'+(v*mul).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function show(id,btn){document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('on'));document.getElementById(id).classList.add('on');btn.classList.add('on')}
+// KPIs
+[{l:'Net / Paycheck',v:'$2,806',s:'every 2 weeks',c:'var(--green)'},{l:'Net / Month',v:'$6,079',s:'×26÷12 correct',c:''},{l:'Net / Year',v:'$72,950',s:'after $14,050 tax',c:''},{l:'Savings Rate',v:'22.9%',s:'benchmark >20% ✓',c:'var(--purple)'},{l:'Year 1 Saved',v:'$16,723',s:'investing + reserves',c:'var(--gold)'},{l:'Age 60 Projection',v:'$4.3M+',s:'at 7% avg return',c:'var(--orange)'}].forEach(k=>{document.getElementById('kgrid').innerHTML+=`<div class="kpi"><div class="kl">${k.l}</div><div class="kv" style="color:${k.c||'var(--text)'}">${k.v}</div><div class="ks">${k.s}</div></div>`});
+// DONUT
+(function(){const svg=document.getElementById('donutSvg'),cx=55,cy=55,r=38,sw=12,ci=2*Math.PI*r;let off=0;S.forEach(s=>{const pct=s.sub/NET,dash=pct*ci,gap=ci-dash,c=document.createElementNS('http://www.w3.org/2000/svg','circle');c.setAttribute('cx',cx);c.setAttribute('cy',cy);c.setAttribute('r',r);c.setAttribute('fill','none');c.setAttribute('stroke',s.c);c.setAttribute('stroke-width',sw);c.setAttribute('stroke-dasharray',`${dash} ${gap}`);c.setAttribute('stroke-dashoffset',String(-off*ci));c.setAttribute('transform',`rotate(-90 ${cx} ${cy})`);svg.appendChild(c);off+=pct});['$2,806','per paycheck'].forEach((txt,i)=>{const t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('x',cx);t.setAttribute('y',i?cy+7:cy-4);t.setAttribute('text-anchor','middle');t.setAttribute('fill',i?'#6a6a80':'#ededf5');t.setAttribute('font-size',i?'7':'10');t.setAttribute('font-weight',i?'400':'700');t.textContent=txt;svg.appendChild(t)});const leg=document.getElementById('dleg');[...S].sort((a,b)=>b.sub-a.sub).slice(0,7).forEach(s=>{leg.innerHTML+=`<div class="dli"><div class="dlid" style="background:${s.c}"></div><span class="dlin">${s.l}</span><span class="dliv">$${s.sub.toFixed(0)}</span><span class="dlip">${(s.sub/NET*100).toFixed(1)}%</span></div>`})})();
+// BARS
+(function(){const el=document.getElementById('blist'),mx=Math.max(...S.map(s=>s.sub));S.forEach(s=>{el.innerHTML+=`<div class="bitem"><div class="bh"><span class="bname">${s.e} ${s.l}</span><span class="bamnt">$${s.sub.toFixed(2)}</span></div><div class="btrack"><div class="bfill" style="width:${(s.sub/mx*100).toFixed(0)}%;background:${s.c};opacity:.8"></div></div></div>`})})();
+// BUDGET GRID
+function buildBG(){const el=document.getElementById('bgrid');el.innerHTML='';const m=bv==='mo'?26/12:bv==='yr'?26:1;S.forEach(s=>{const tot=(s.sub*m).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}),pct=(s.sub/NET*100).toFixed(1);let items='';s.items.forEach(it=>{const v=(it.bw*m).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});items+=`<div class="bitem2"><div class="biml"><div class="bimd${it.b?' b':''}"></div><div><div class="bimn">${it.n}</div><div class="bimno">${it.nt}</div></div></div><div class="bima${it.bw===0?' z'}">${it.bw===0?'$0.00 ⚠':'$'+v}</div></div>`});el.innerHTML+=`<div class="bcard" data-sec="${s.id}"><div class="bch"><div class="bchl"><span style="font-size:15px">${s.e}</span><span class="bcname" style="color:${s.c}">${s.l}</span><span class="bcpct">${pct}%</span></div><span class="bctot">$${tot}</span></div><div class="bcbar" style="background:linear-gradient(90deg,${s.c}44,transparent)"></div><div>${items}</div></div>`})}
+function setBV(v,btn){bv=v;document.querySelectorAll('#budget .vtb').forEach(b=>b.classList.remove('on'));btn.classList.add('on');buildBG()}
+function filterB(){const q=document.getElementById('sinp').value.toLowerCase();document.querySelectorAll('.bcard').forEach(c=>{c.style.display=c.textContent.toLowerCase().includes(q)?'':'none'})}
+// TABLE
+function buildTable(){const el=document.getElementById('ftable'),m=tv==='mo'?26/12:tv==='yr'?26:1,lbl=tv==='mo'?'Monthly':tv==='yr'?'Annual':'Biweekly';let h=`<thead><tr><th>Item</th><th>${lbl} ($)</th><th>% Net</th><th>Notes</th></tr></thead><tbody>`;h+=`<tr class="sr"><td>💰 INCOME</td><td></td><td></td><td></td></tr>`;[['Gross Per Paycheck',3346.15,'','26 pay periods'],['Federal Tax',-540.38,'16.1%','No FICA on OPT'],['✅ NET TAKE-HOME',2805.77,'100%','Your real paycheck']].forEach(([n,v,p,nt])=>{h+=`<tr><td>${n}</td><td class="${n.includes('NET')?'tg':''}">${v<0?'-':''}$${Math.abs(v*m).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}</td><td class="tm">${p}</td><td class="tm">${nt}</td></tr>`});S.forEach(s=>{h+=`<tr class="sr"><td>${s.e} ${s.l.toUpperCase()}</td><td>$${(s.sub*m).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}</td><td class="tm">${(s.sub/NET*100).toFixed(1)}%</td><td></td></tr>`;s.items.forEach(it=>{h+=`<tr><td style="padding-left:20px">${it.n}</td><td${it.bw===0?' style="color:var(--red)"':''}>$${(it.bw*m).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}</td><td class="tm">${(it.bw/NET*100).toFixed(1)}%</td><td class="tm">${it.nt}</td></tr>`})});el.innerHTML=h+'</tbody>'}
+function setTV(v,btn){tv=v;document.querySelectorAll('#table .vtb').forEach(b=>b.classList.remove('on'));btn.classList.add('on');buildTable()}
+// WEALTH
+(function(){const pg=document.getElementById('pgrid');[{l:'Emergency Fund',bw:250,tgt:15000,c:'#4ade80',nt:'Target $15K ~23 months'},{l:'H1B Legal Fund',bw:115,tgt:4500,c:'#a78bfa',nt:'Target $4,500 by Month 18'},{l:'Engagement Ring',bw:50,tgt:5200,c:'#fbbf24',nt:'$5,200 in 4 years'},{l:'Wedding Fund',bw:25,tgt:10000,c:'#fb923c',nt:'Target $10K'},{l:'Brokerage (Yr1)',bw:278.19,tgt:7233,c:'#38bdf8',nt:'$7,233 invested Year 1'},{l:'Ghana Flight',bw:75,tgt:1950,c:'#f87171',nt:'Home every 18 months'}].forEach(it=>{const yr1=it.bw*26,pct=Math.min(yr1/it.tgt*100,100).toFixed(0);pg.innerHTML+=`<div class="pc"><div class="pcl">${it.l}</div><div class="pca" style="color:${it.c}">$${Math.round(yr1).toLocaleString()}<span style="font-size:12px;color:var(--muted)">/yr</span></div><div class="pcs">${it.nt}</div><div class="pbar"><div class="pfill" style="width:${pct}%;background:${it.c}"></div></div><div class="pcpct">${pct}% of Year 1 target</div></div>`});const tl=document.getElementById('tl');ML.forEach(m=>{tl.innerHTML+=`<div class="tli"><div class="tla">Age ${m.age} · Year ${m.yr}</div><div class="tlp">${m.p}</div><div class="tls">${m.s}</div></div>`})})();
+// DATING
+(function(){document.getElementById('dbudg').innerHTML=`<div class="dc"><div class="dtag">Monthly recurring</div><div class="dtit">Regular Dates</div><div class="dbud">$163/mo</div><div class="dnote">2-3 dates/month. Bayshore walk, Ybor City, dinner, Armature Works.</div></div><div class="dc"><div class="dtag">Monthly recurring</div><div class="dtit">Everyday Romance</div><div class="dbud">$25/mo</div><div class="dnote">Surprise coffee, flowers, handwritten notes. The details she remembers most.</div></div><div class="dc"><div class="dtag">Biweekly saving</div><div class="dtit">Special Occasions Fund</div><div class="dbud">$25/BW → $650/yr</div><div class="dnote">Birthday, Valentine's, anniversary, Christmas. Never scramble last-minute.</div></div><div class="dc"><div class="dtag">Long-term saving</div><div class="dtit">Engagement Ring Fund</div><div class="dbud">$50/BW → $5,200 in 4 yrs</div><div class="dnote">Moissanite = $1,500-3,000. Lab diamond = $2,000-4,000. Age 32 = ready.</div></div><div class="dc"><div class="dtag">Long-term saving</div><div class="dtit">Wedding Fund</div><div class="dbud">$25/BW → $650/yr</div><div class="dnote">Tampa modest wedding $8-12K. Start Day 1.</div></div>`;
+document.getElementById('docc').innerHTML=`<div class="dc"><div class="dtag">Annual</div><div class="dtit">Valentine's Day (Feb 14)</div><div class="dbud">$100</div><div class="dnote">Rooftop dinner downtown Tampa, sunset picnic on Bayshore.</div></div><div class="dc"><div class="dtag">Annual</div><div class="dtit">Her Birthday</div><div class="dbud">$120</div><div class="dnote">Plan 3 weeks ahead. Dinner + experience + personal gift.</div></div><div class="dc"><div class="dtag">Annual</div><div class="dtit">Your Birthday</div><div class="dbud">$60</div><div class="dnote">Let her celebrate you. Contribute to the occasion.</div></div><div class="dc"><div class="dtag">Annual</div><div class="dtit">Christmas Gift</div><div class="dbud">$100</div><div class="dnote">Thoughtful beats expensive. Experience gift outlasts any object.</div></div><div class="dc"><div class="dtag">Annual</div><div class="dtit">Anniversary</div><div class="dbud">$120</div><div class="dnote">Recreate first date or something deeply meaningful.</div></div><div class="dc"><div class="dtag">Year-round</div><div class="dtit">Random Appreciation</div><div class="dbud">$80/yr (6-8 times)</div><div class="dnote">Surprise flowers, snack, coffee delivery. No occasion needed.</div></div>`;
+const fd=[["Bayshore Blvd Sunset Walk","$0","3.5 miles of waterfront. Tampa's most romantic free date."],["Clearwater Beach","Gas+$20","30 min away. One of USA's best beaches."],["Ybor City Night Out","$20","Cuban food, street murals, live music."],["Tampa Riverwalk","$10-15","Walk the water, watch boats, get ice cream."],["Picnic at Al Lopez Park","$15-20","Cook together, pack a basket. Shows you planned."],["USF Botanical Gardens","$5-10","Beautiful, peaceful. Great early relationship date."],["Museum of Art free nights","$0","Free Thursday evenings."],["St. Pete Pier","$10-20","Waterfront, street food, 30 min away."],["Sunrise at Ballast Point","$0","Watch sunrise over the bay. Unforgettable."],["Kennedy Space Center","$60-80","3 hrs away. Save for special occasions."],["Weekend Trip to Miami","$150-200","South Beach + Little Havana + Wynne Walls."],["Orlando Theme Parks","$100-150","1 hr away. Universal or Disney once a year."]];
+const el=document.getElementById('dfree');fd.forEach(([t,cost,note])=>{el.innerHTML+=`<div class="dc">${cost==='$0'?'<span class="ftag">FREE</span>':'<div class="dtag">Low Cost</div>'}<div class="dtit">${t}</div>${cost!=='$0'?'<div class="dbud">'+cost+'</div>':''}<div class="dnote">${note}</div></div>`});
+document.getElementById('dmarr').innerHTML=`<div class="dc"><div class="dtag">Year 1-4</div><div class="dtit">Engagement Ring</div><div class="dbud">$50/BW → ready at 32</div><div class="dnote">Moissanite or lab diamond. The ring is symbolic — the commitment is everything.</div></div><div class="dc"><div class="dtag">Year 1+</div><div class="dtit">Wedding Fund</div><div class="dbud">$25/BW from Day 1</div><div class="dnote">Tampa wedding $8-12K. Ghanaian traditional adds more. Start early.</div></div><div class="dc"><div class="dtag">Non-negotiable</div><div class="dtit">The Family Conversation</div><div class="dbud">$0 cost</div><div class="dnote">Your future wife must know: $300/mo goes to Ghana. Have this before you propose.</div></div><div class="dc"><div class="dtag">Pre-marriage</div><div class="dtit">Pre-Marital Counseling</div><div class="dbud">~$400 or free via church</div><div class="dnote">Many Tampa churches offer free sessions. Do it regardless.</div></div><div class="dc"><div class="dtag">Year 3+</div><div class="dtit">Home Down Payment</div><div class="dbud">$50/BW from Year 3</div><div class="dnote">Tampa ~$480K median. Need ~$58K. Build equity not landlord's wealth.</div></div>`})();
+// GHANA
+(function(){const gs=S.find(x=>x.id==='ghana'),el=document.getElementById('ggrid');gs.items.forEach(it=>{el.innerHTML+=`<div class="bcard"><div class="bch"><div class="bchl"><span style="font-size:15px">🌍</span><span class="bcname" style="color:#f87171">${it.n}</span></div><span class="bctot">$${it.bw}/BW</span></div><div style="padding:10px 14px"><div style="font-size:11px;color:var(--muted);margin-bottom:4px">${it.nt}</div><div style="font-size:12px;font-weight:600">$${Math.round(it.bw*26).toLocaleString()}/yr</div></div></div>`});const gp=document.getElementById('gplan');[{e:'🏠',t:'Ghana property fund (Year 3+)',d:'$25-50/BW. Accra land $10K-50K. $25/BW = $13,000 in 10 years. Your legacy.'},{e:'📈',t:'Increase remittance as income grows',d:'When you get a raise, increase to $400-500/mo. Your family carried you. Carry them.'},{e:'🎓',t:'Sibling development — firstborn obligation',d:'$15/BW = $390/yr dedicated. School fees, startup capital. Structured answer when the call comes.'},{e:'✈️',t:'Ghana visits — planned not emergency',d:'$75/BW = $1,950/yr. TPA→ACC ~$900-1,400. In-country ~$300-500. Visit every 18 months.'}].forEach(p=>{gp.innerHTML+=`<div style="display:flex;gap:10px;align-items:flex-start"><div style="width:30px;height:30px;border-radius:8px;background:rgba(248,113,113,.12);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0">${p.e}</div><div><div style="font-size:12px;font-weight:600;margin-bottom:2px">${p.t}</div><div style="font-size:10px;color:var(--muted);line-height:1.4">${p.d}</div></div></div>`})})();
+// ROADMAP
+(function(){const phases=[{ph:"Week 1 — Before First Paycheck",c:"#f87171",d:"o",items:["Open Ally HYSA + Fidelity Brokerage + Lemfi app — all free","Ask HR: 401k match? Contribute minimum to capture full match","Ask HR: HSA available? Triple tax advantage","Apply for term life insurance — Policygenius.com (20 min)","Apply for renters insurance — Lemonade.com (~$15/mo)","Open secured credit card (Discover Secured) — build credit score","Name beneficiaries on every account","Set up Personal Capital (free net worth tracker)"]},{ph:"Year 1 (Jun 2026 – May 2027)",c:"#fbbf24",d:"",items:["Emergency fund: $250/BW → target $15K (~Month 23)","H1B fund: $115/BW → $3K by Month 12","Brokerage: $278/BW → $7,233 invested Year 1","Book immigration attorney consultation Month 1-2","File 1040-NR with Sprintax — April 2027","Net worth milestone: $15,000+ by May 2027"]},{ph:"Year 2 (Jun 2027 – May 2028)",c:"#a78bfa",d:"p",items:["H1B lottery filed April 2027","Emergency fund complete → redirect $250/BW to investing","Start Wedding Fund increase to $50-75/BW","Negotiate raise or start job search (10-20% switching premium)","Net worth milestone: $40,000-50,000 by May 2028"]},{ph:"Year 3-4 (Jun 2028 – May 2030)",c:"#4ade80",d:"t",items:["Ring fund complete ~$5,200 — propose at 31-32","Start home down payment fund $50/BW","Start Ghana property fund $25/BW","Check Roth IRA eligibility with CPA","Net worth milestone: $100,000+ by May 2030"]},{ph:"Year 5+ — Legacy",c:"#38bdf8",d:"t",items:["Increase Ghana remittance to $400-500/mo","Buy Tampa duplex — tenant pays your mortgage","Open 529 education fund when first child born","Ghana property / family home in Accra region","Financial independence possible at age 50-55"]}];const el=document.getElementById('rgrid');phases.forEach(p=>{let its='';p.items.forEach(i=>{its+=`<div class="rit"><div class="rd ${p.d}"></div><span>${i}</span></div>`});el.innerHTML+=`<div class="rc"><div class="rph" style="color:${p.c}">${p.ph}</div>${its}</div>`})})();
+// CHECKLIST
+const CL=[{t:"Open Ally Bank HYSA",d:"4-5% APY. Emergency fund + ring-fence $1,500 Ghana emergency travel.",tg:"tu"},{t:"Open Fidelity Brokerage",d:"Zero-fee index funds. Buy VOO or VTI every payday.",tg:"tu"},{t:"Download Lemfi app",d:"Ghana remittance. Fees 0-1% vs Western Union 5-8%.",tg:"tu"},{t:"Ask HR about 401k match",d:"Free money. Contribute minimum to capture full employer match Day 1.",tg:"tu"},{t:"Ask HR about HSA",d:"If employer offers HDHP, open HSA. Triple tax advantage.",tg:"tu"},{t:"Fill in health insurance line",d:"HR tells you your deduction. Update the $0 line immediately.",tg:"tu"},{t:"Apply for term life insurance",d:"Policygenius.com. 20 minutes. ~$25/mo. Name Ghana family as beneficiary.",tg:"tu"},{t:"Apply for renters insurance",d:"Lemonade.com. ~$15/mo. Covers laptop, phone, furniture.",tg:"tu"},{t:"Apply for SSN",d:"Social Security Administration. Required for employment and accounts.",tg:"tu"},{t:"Name beneficiaries on every account",d:"HYSA, brokerage, life insurance. Without this family sees nothing.",tg:"tu"},{t:"Open secured credit card",d:"Discover Secured ($300 deposit). 1 sub charged, paid in full monthly. 740+ score in 2 yrs.",tg:"t1"},{t:"Set up Personal Capital",d:"Free net worth tracker. Connect all accounts. Check monthly.",tg:"t1"},{t:"Book immigration attorney consultation",d:"$150-300 one-time. Confirm STEM OPT and H1B timeline.",tg:"t1"},{t:"Join a gym",d:"Planet Fitness Tampa = $10/mo. Health = energy = career performance.",tg:"t1"},{t:"File 1040-NR with Sprintax (April 2027)",d:"NOT TurboTax. Also file Form 8843. Deadline April 15 2027.",tg:"t1"},{t:"Build emergency fund to $15,000",d:"$250/BW → ~23 months. Ally HYSA. Ring-fence $1,500 within it.",tg:"t1"},{t:"Fund H1B legal fund to $3,000",d:"$115/BW → Month 12-13. Retain attorney 3 months before OPT expires.",tg:"t1"},{t:"Negotiate first raise",d:"Year 1 anniversary. Aim 8-12%. If denied, start job search.",tg:"t2"},{t:"Start wedding fund increase",d:"Once emergency fund complete, increase to $50-75/BW.",tg:"t2"},{t:"Have the Ghana conversation with partner",d:"$300/mo remittance is a household obligation. Must happen before engagement.",tg:"t2"},{t:"Start Ghana property fund",d:"Year 3+. $25/BW. Land or family home. Your legacy.",tg:"t3"},{t:"Start home down payment fund",d:"Year 3+. $50/BW. Tampa ~$480K. Need ~$58K.",tg:"t3"},{t:"Check Roth IRA eligibility",d:"Once Green Card or pass Substantial Presence Test. Max $7K/yr tax-free.",tg:"t3"},{t:"Buy a Tampa duplex",d:"Live in one unit, rent the other. Tenant pays mortgage.",tg:"t3"}].map(x=>({...x,done:false}));
+const tl={tu:'Week 1',t1:'Year 1',t2:'Year 2',t3:'Year 3+'};
+function buildCL(){const el=document.getElementById('clist');el.innerHTML='';CL.forEach((item,i)=>{const d=document.createElement('div');d.className='ci'+(item.done?' done':'');d.innerHTML=`<div class="cbox"><span class="ctick">✓</span></div><div class="cc"><div class="ctit">${item.t}</div><div class="cdesc">${item.d}</div></div><span class="ctag ${item.tg}">${tl[item.tg]}</span>`;d.addEventListener('click',()=>{CL[i].done=!CL[i].done;d.classList.toggle('done');updCP()});el.appendChild(d)});updCP()}
+function updCP(){const done=CL.filter(x=>x.done).length,tot=CL.length;document.getElementById('cpfill').style.width=(done/tot*100)+'%';document.getElementById('ccount').textContent=`${done} of ${tot} completed`}
+buildBG();buildTable();buildCL();
+</script>
+</body>
+</html>

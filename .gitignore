@@ -1,0 +1,22 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+*.suo
+*.user
+
+# Logs
+*.log
+
+# Excel source (personal data, keep local only)
+*.xlsx
+*.xls
+
+# Claude internal
+.claude/
+
+# Backup files
+WealthOS_Backup_*.json

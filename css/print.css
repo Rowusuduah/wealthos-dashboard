@@ -1,0 +1,80 @@
+/* ─── Print Styles — WealthOS Dashboard ─────────────────────────────────── */
+@media print {
+  /* Hide interactive UI chrome */
+  #nav,
+  #skip-link,
+  .vtog,
+  .sbar,
+  .table-actions,
+  .tact-btn,
+  body::before {
+    display: none !important;
+  }
+
+  /* Reset layout for print */
+  body {
+    background: #fff !important;
+    color: #111 !important;
+    font-size: 10pt;
+  }
+
+  /* Show only the active section */
+  .sec { display: none !important; }
+  .sec.on { display: block !important; }
+
+  /* Force white background on all surfaces */
+  .card,
+  .bcard,
+  .kpi,
+  .pc,
+  .dc,
+  .rc,
+  .ci {
+    background: #fff !important;
+    border-color: #ccc !important;
+    box-shadow: none !important;
+  }
+
+  /* Table formatting */
+  table { width: 100%; border-collapse: collapse; font-size: 9pt; }
+  thead th { border-bottom: 2px solid #333; padding: 5px 8px; font-size: 8pt; color: #555; }
+  tbody td { padding: 4px 8px; border-bottom: 1px solid #eee; color: #333; }
+  tbody tr:hover { background: none; }
+
+  /* Section header rows */
+  .sr th, .sr td { background: #f5f5f5 !important; color: #111 !important; font-weight: 700; }
+
+  /* Colors work on print */
+  .tg { color: #16a34a !important; }
+
+  /* KPI values */
+  .kv { font-size: 16pt; }
+  .kgrid { grid-template-columns: repeat(3, 1fr); }
+
+  /* Print header */
+  .sec.on::before {
+    content: "Wealth OS — Tampa 2026 · Printed " attr(data-print-date);
+    display: block;
+    font-size: 8pt;
+    color: #777;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 8px;
+  }
+
+  /* Page breaks */
+  .bcard  { page-break-inside: avoid; break-inside: avoid; }
+  .kpi    { page-break-inside: avoid; break-inside: avoid; }
+  .tli    { page-break-inside: avoid; break-inside: avoid; }
+  .rc     { page-break-inside: avoid; break-inside: avoid; }
+  .ci     { page-break-inside: avoid; break-inside: avoid; }
+
+  /* Collapse animations */
+  .fi     { animation: none !important; opacity: 1 !important; transform: none !important; }
+  .dot    { animation: none !important; }
+
+  /* Muted text readable on white */
+  .muted, .kl, .ks, .bname, .bimn, .bimno, .card-title, .pcl, .pcs, .ks, .tls, .tla, .dnote, .cdesc, .acnote {
+    color: #555 !important;
+  }
+}
