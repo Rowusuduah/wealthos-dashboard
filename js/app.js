@@ -779,15 +779,16 @@ function init() {
   // Init net worth tracker
   if (typeof initNetWorth === 'function') initNetWorth();
 
-  // Date label: countdown to June 1 start, then live week/pay period once active
+  // Date label: countdown until one week before June 1, then go live
   (function renderDateLabel() {
-    const now       = new Date();
-    const START     = new Date('2026-06-01T00:00:00');
-    const el        = document.getElementById('overview-date-label');
+    const now        = new Date();
+    const START      = new Date('2026-06-01T00:00:00');
+    const ACTIVATE   = new Date('2026-05-25T00:00:00'); // go live 1 week before first payday
+    const el         = document.getElementById('overview-date-label');
     if (!el) return;
 
-    if (now < START) {
-      // Pre-start: show countdown
+    if (now < ACTIVATE) {
+      // Pre-activation: show countdown to June 1
       const daysLeft = Math.ceil((START - now) / 86400000);
       el.innerHTML = `<span style="color:var(--orange);font-weight:600">Starts June 1, 2026</span> · <strong style="color:var(--text)">${daysLeft} days to go</strong>`;
     } else {
