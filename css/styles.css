@@ -44,21 +44,102 @@ body.light::before {
     linear-gradient(90deg, rgba(0,0,0,0.025) 1px, transparent 1px);
 }
 
-/* ─── Theme Toggle Button ────────────────────────────────────────────────── */
+/* ─── Theme Toggle Button — icon-only circle, far-right of nav ───────────── */
 #theme-toggle {
-  margin-left: auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
   background: var(--surf2);
   border: 1px solid var(--border);
   color: var(--text);
-  border-radius: 20px;
-  padding: 4px 10px;
-  font-size: 13px;
+  font-size: 16px;
+  line-height: 1;
   cursor: pointer;
-  white-space: nowrap;
-  transition: background .15s, color .15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
+  margin-left: 8px;
+  transition: background .15s, border-color .15s, transform .2s;
 }
-#theme-toggle:hover { background: var(--brig); }
+#theme-toggle:hover { background: var(--brig); border-color: var(--brig); transform: scale(1.12); }
+
+/* ─── Password Gate ──────────────────────────────────────────────────────── */
+#gate {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+#gate.hidden { display: none; }
+
+#gate-box {
+  background: var(--surf);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 36px 32px;
+  width: 100%;
+  max-width: 340px;
+  text-align: center;
+  box-shadow: 0 24px 64px rgba(0,0,0,.4);
+}
+
+#gate-logo {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--green);
+  letter-spacing: .06em;
+  margin-bottom: 6px;
+}
+
+#gate-sub {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 24px;
+}
+
+#gate-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#gate-input {
+  background: var(--surf2);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  color: var(--text);
+  font-size: 14px;
+  padding: 10px 14px;
+  text-align: center;
+  letter-spacing: .1em;
+  outline: none;
+  transition: border-color .15s;
+}
+#gate-input:focus { border-color: var(--green); }
+
+#gate-form button {
+  background: var(--green);
+  color: #000;
+  font-weight: 700;
+  font-size: 13px;
+  border: none;
+  border-radius: 9px;
+  padding: 10px;
+  cursor: pointer;
+  transition: opacity .15s;
+}
+#gate-form button:hover { opacity: .88; }
+
+#gate-err {
+  font-size: 11px;
+  color: var(--red);
+  min-height: 16px;
+}
 
 /* ─── Base ───────────────────────────────────────────────────────────────── */
 body {
@@ -273,7 +354,7 @@ body.light #nav { background: rgba(240,242,248,0.95); }
   cursor: pointer;
   padding: 4px 11px;
   border-radius: 5px;
-  transition: all .15s;
+  transition: color .15s, background-color .15s;
 }
 .vtb.on { background: var(--surf2); color: var(--text); }
 
@@ -303,7 +384,7 @@ body.light #nav { background: rgba(240,242,248,0.95); }
 .bimd   { width: 5px; height: 5px; border-radius: 50%; background: var(--border); flex-shrink: 0; margin-top: 4px; }
 .bimd.b { background: var(--purple); }
 .bimn   { font-size: 11px; color: var(--muted); line-height: 1.3; }
-.bimno  { font-size: 9px; color: #7a7a9a; margin-top: 1px; } /* #7a7a9a = 4.6:1 on --bg, passes WCAG AA */
+.bimno  { font-size: 9px; color: var(--muted); margin-top: 1px; } /* var(--muted): 5.3:1 dark, 6.6:1 light — passes WCAG AA in both themes */
 .bima   { font-size: 12px; font-weight: 600; flex-shrink: 0; padding-left: 8px; }
 .bima.z { color: var(--red); opacity: .7; }
 
@@ -391,7 +472,7 @@ tbody td:first-child { text-align: left; color: var(--text); }
   background: var(--surf);
   color: var(--text);
   cursor: pointer;
-  transition: all .15s;
+  transition: color .15s, background-color .15s, border-color .15s;
 }
 .tact-btn:hover { border-color: var(--brig); background: var(--surf2); }
 .tact-btn.primary { background: rgba(74,222,128,.1); border-color: rgba(74,222,128,.3); color: var(--green); }
@@ -428,7 +509,7 @@ tbody td:first-child { text-align: left; color: var(--text); }
 
 /* ─── Dating Cards ────────────────────────────────────────────────────────── */
 .dgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px,1fr)); gap: 10px; margin-bottom: 24px; }
-.dc    { background: var(--surf); border: 1px solid var(--border); border-radius: 12px; padding: 14px; transition: all .2s; }
+.dc    { background: var(--surf); border: 1px solid var(--border); border-radius: 12px; padding: 14px; transition: border-color .2s; }
 .dc:hover { border-color: var(--brig); }
 .dtag  { font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--orange); margin-bottom: 6px; }
 .dtit  { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
@@ -445,7 +526,7 @@ tbody td:first-child { text-align: left; color: var(--text); }
 
 /* ─── Roadmap Grid ────────────────────────────────────────────────────────── */
 .rgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px,1fr)); gap: 10px; }
-.rc    { background: var(--surf); border: 1px solid var(--border); border-radius: 12px; padding: 14px; transition: all .2s; }
+.rc    { background: var(--surf); border: 1px solid var(--border); border-radius: 12px; padding: 14px; transition: border-color .2s; }
 .rc:hover { border-color: var(--brig); }
 .rph   { font-size: 9px; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 8px; font-weight: 600; }
 .rit   { display: flex; align-items: flex-start; gap: 7px; font-size: 11px; color: var(--muted); line-height: 1.4; margin-bottom: 6px; }
@@ -464,7 +545,7 @@ tbody td:first-child { text-align: left; color: var(--text); }
   border: 1px solid var(--border);
   border-radius: 9px;
   padding: 11px 12px;
-  transition: all .2s;
+  transition: opacity .2s, border-color .2s;
   cursor: pointer;
 }
 .ci:hover  { border-color: var(--brig); }
@@ -481,7 +562,7 @@ tbody td:first-child { text-align: left; color: var(--text); }
 
 .ctag  { font-size: 8px; letter-spacing: .07em; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; margin-top: 1px; font-weight: 600; }
 .tu    { background: rgba(248,113,113,.12); color: var(--red); }
-.t1    { background: rgba(251,191,36,.12);  color: var(--gold); }
+.t1    { background: rgba(251,191,36,.12);  color: #b45309; } /* #b45309 = 5.1:1 on light surf, 4.9:1 on dark — passes AA both modes */
 .t2    { background: rgba(167,139,250,.12); color: var(--purple); }
 .t3    { background: rgba(74,222,128,.12);  color: var(--green); }
 
@@ -734,6 +815,66 @@ tbody td:first-child { text-align: left; color: var(--text); }
   .tph { gap: 8px; padding: 10px 12px; }
   .tpnav { padding: 5px 10px; }
 }
+
+/* ─── Visa Timeline ──────────────────────────────────────────────────────── */
+.vt-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+}
+.vt-item:last-child { border-bottom: none; }
+.vt-dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+.vt-body  { flex: 1; }
+.vt-head  { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 2px; }
+.vt-label { font-size: 12px; font-weight: 600; }
+.vt-days  { font-size: 11px; font-weight: 700; white-space: nowrap; flex-shrink: 0; }
+.vt-date  { font-size: 10px; color: var(--muted); line-height: 1.4; }
+
+/* ─── Multi-period Chart ─────────────────────────────────────────────────── */
+.mp-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  height: 88px;
+  padding-bottom: 0;
+}
+.mp-bar-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  height: 100%;
+}
+.mp-bar-wrap {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+.mp-bar {
+  width: 100%;
+  border-radius: 3px 3px 0 0;
+  min-height: 2px;
+  opacity: .85;
+  transition: opacity .15s;
+}
+.mp-bar:hover { opacity: 1; }
+.mp-val  { font-size: 9px; color: var(--muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.mp-lbl  { font-size: 9px; color: var(--muted); text-align: center; }
+
+/* ─── Credit Score ───────────────────────────────────────────────────────── */
+.cs-score-display { text-align: center; padding: 16px 0 10px; }
+.cs-score-num  { font-size: 48px; font-weight: 800; line-height: 1; }
+.cs-score-band { font-size: 11px; font-weight: 600; margin-top: 4px; letter-spacing: .06em; text-transform: uppercase; }
+.cs-score-date { font-size: 10px; color: var(--muted); margin-top: 2px; }
 
 /* ─── Reduced Motion (WCAG 2.1 SC 2.3.3 — Level AA) ────────────────────── */
 @media (prefers-reduced-motion: reduce) {

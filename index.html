@@ -20,6 +20,20 @@
 </head>
 <body>
 
+  <!-- Password Gate -->
+  <div id="gate" role="dialog" aria-modal="true" aria-label="Login">
+    <div id="gate-box">
+      <div id="gate-logo"><span class="dot" aria-hidden="true"></span>Wealth OS</div>
+      <p id="gate-sub">Your personal finance dashboard</p>
+      <form id="gate-form" autocomplete="off">
+        <label for="gate-input" class="sr-only">Password</label>
+        <input id="gate-input" type="password" placeholder="Enter password" autocomplete="current-password">
+        <button type="submit">Unlock</button>
+        <p id="gate-err" aria-live="polite"></p>
+      </form>
+    </div>
+  </div>
+
   <!-- Skip Navigation Link (accessibility) -->
   <a href="#overview" id="skip-link">Skip to main content</a>
 
@@ -27,9 +41,7 @@
   <nav id="nav" aria-label="Dashboard sections">
     <span id="navbrand" aria-label="Wealth OS Dashboard"><span class="dot" aria-hidden="true"></span>Wealth OS</span>
 
-    <button id="theme-toggle" aria-label="Toggle light/dark mode">🌙 Dark</button>
-
-    <div role="tablist" aria-label="Dashboard tabs" style="display:flex;gap:2px;flex-wrap:wrap">
+    <div role="tablist" aria-label="Dashboard tabs" style="display:flex;gap:2px;flex-wrap:wrap;flex:1">
       <button id="tab-overview"  class="ntab on" role="tab" data-tab="overview"  aria-selected="true"  aria-controls="overview">Overview</button>
       <button id="tab-budget"    class="ntab"    role="tab" data-tab="budget"    aria-selected="false" aria-controls="budget">Budget</button>
       <button id="tab-table"     class="ntab"    role="tab" data-tab="table"     aria-selected="false" aria-controls="table">Full Table</button>
@@ -41,6 +53,8 @@
       <button id="tab-tracker"   class="ntab"    role="tab" data-tab="tracker"   aria-selected="false" aria-controls="tracker">Tracker</button>
       <button id="tab-networth"  class="ntab"    role="tab" data-tab="networth"  aria-selected="false" aria-controls="networth">Net Worth</button>
     </div>
+
+    <button id="theme-toggle" aria-label="Switch to light mode">🌙</button>
   </nav>
 
   <main>
@@ -91,6 +105,12 @@
           <div class="acn"><div class="acl">Savings rate yr 2+</div><div class="acv" style="color:var(--green)">35.9%</div></div>
           <p class="acnote">Emergency fund ~Month 23. H1B ~Month 13-18. Redirect <strong style="color:var(--text)">+$365/BW</strong> to brokerage. Wealth building accelerates massively.</p>
         </div>
+      </div>
+
+      <!-- Visa / Immigration Timeline -->
+      <div class="card" style="margin-top:14px">
+        <div class="card-title">Visa &amp; immigration timeline — F-1 OPT → H1B</div>
+        <div id="visa-timeline" style="margin-top:6px"></div>
       </div>
     </section>
 
@@ -249,6 +269,9 @@
         <div id="tracker-log"></div>
       </div>
 
+      <!-- Multi-period spending comparison -->
+      <div id="tracker-multi-period"></div>
+
       <!-- Backup & Restore -->
       <div id="tracker-backup"></div>
 
@@ -273,10 +296,22 @@
         </div>
       </div>
 
+      <!-- Trend chart -->
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-title">Net worth over time</div>
+        <div id="nw-chart" style="margin-top:8px"></div>
+      </div>
+
       <!-- History -->
-      <div class="card">
+      <div class="card" style="margin-bottom:14px">
         <div class="card-title">Snapshot history</div>
         <div id="nw-history" style="margin-top:8px"></div>
+      </div>
+
+      <!-- Credit score tracker -->
+      <div class="card">
+        <div class="card-title">Credit score tracker</div>
+        <div id="cs-section" style="margin-top:8px"></div>
       </div>
     </section>
 

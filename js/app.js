@@ -1,5 +1,38 @@
 'use strict';
 
+// ─── Password Gate ────────────────────────────────────────────────────────────
+// Change PASSWORD below to whatever you want. This is client-side only —
+// keeps casual visitors out but is not cryptographically secure.
+(function initGate() {
+  const PASSWORD = 'Tampa2026$';
+  const KEY      = 'wealthos_auth';
+
+  if (localStorage.getItem(KEY) === 'yes') {
+    document.getElementById('gate').classList.add('hidden');
+    return;
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const gate  = document.getElementById('gate');
+    const input = document.getElementById('gate-input');
+    const err   = document.getElementById('gate-err');
+
+    input.focus();
+
+    document.getElementById('gate-form').addEventListener('submit', e => {
+      e.preventDefault();
+      if (input.value === PASSWORD) {
+        localStorage.setItem(KEY, 'yes');
+        gate.classList.add('hidden');
+      } else {
+        err.textContent = 'Incorrect password. Try again.';
+        input.value = '';
+        input.focus();
+      }
+    });
+  });
+})();
+
 // ─── Theme ───────────────────────────────────────────────────────────────────
 (function initTheme() {
   const saved = localStorage.getItem('wealthos_theme');
@@ -14,7 +47,7 @@
     const btn = document.getElementById('theme-toggle');
     if (!btn) return;
     const isLight = document.body.classList.contains('light');
-    btn.textContent = isLight ? '🌙 Dark' : '☀️ Light';
+    btn.textContent = isLight ? '🌙' : '☀️';
     btn.setAttribute('aria-label', isLight ? 'Switch to dark mode' : 'Switch to light mode');
   }
 
@@ -118,9 +151,10 @@ function switchTab(id) {
   if (id === 'tracker' && typeof renderTracker === 'function') {
     renderTracker();
   }
-  // Refresh Overview pulse when returning to Overview (picks up new transactions)
+  // Refresh Overview pulse + visa timeline when returning to Overview
   if (id === 'overview') {
     renderOverviewTrackerPulse();
+    renderVisaTimeline();
   }
   // Refresh net worth on tab switch (picks up data restored from backup)
   if (id === 'networth' && typeof renderNetWorth === 'function') {
@@ -220,6 +254,45 @@ function renderOverviewTrackerPulse() {
     </div>`;
 }
 
+// ─── Overview: Visa / Immigration Timeline ────────────────────────────────────
+function renderVisaTimeline() {
+  const el = document.getElementById('visa-timeline');
+  if (!el) return;
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const items = [...VISA_TIMELINE].sort((a, b) => a.date.localeCompare(b.date));
+
+  el.innerHTML = items.map(v => {
+    const d       = new Date(v.date + 'T00:00:00');
+    const diff    = Math.round((d - today) / 86400000);
+    const isPast  = diff < 0;
+    const isToday = diff === 0;
+
+    let daysStr, urgencyCol;
+    if (isPast)        { daysStr = `${Math.abs(diff)}d ago`; urgencyCol = 'var(--muted)'; }
+    else if (isToday)  { daysStr = 'Today!';                 urgencyCol = 'var(--green)'; }
+    else if (diff <= 60)  { daysStr = `${diff}d`;            urgencyCol = 'var(--red)'; }
+    else if (diff <= 180) { daysStr = `${diff}d`;            urgencyCol = 'var(--orange)'; }
+    else               { daysStr = `${diff}d`;               urgencyCol = v.c; }
+
+    const labelCol = isPast ? 'var(--muted)' : 'var(--text)';
+    const dotCol   = isPast ? 'rgba(138,138,166,.3)' : urgencyCol;
+
+    return `<div class="vt-item">
+      <div class="vt-dot" style="background:${dotCol}" aria-hidden="true"></div>
+      <div class="vt-body">
+        <div class="vt-head">
+          <span class="vt-label" style="color:${labelCol}">${escapeHTML(v.l)}</span>
+          <span class="vt-days" style="color:${urgencyCol}">${daysStr}</span>
+        </div>
+        <div class="vt-date">${v.date} · ${escapeHTML(v.note)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
 // ─── Overview: KPI Grid ──────────────────────────────────────────────────────
 function renderKPIs() {
   const el = document.getElementById('kgrid');
@@ -270,7 +343,7 @@ function renderDonut() {
     t.setAttribute('x', cx);
     t.setAttribute('y', i ? cy + 7 : cy - 4);
     t.setAttribute('text-anchor', 'middle');
-    t.setAttribute('fill', i ? '#8a8aa6' : '#ededf5');
+    t.setAttribute('fill', i ? 'var(--muted)' : 'var(--text)');
     t.setAttribute('font-size', i ? '7px' : '10px'); // explicit px units — avoids ambiguity in SVG contexts
     t.setAttribute('font-weight', i ? '400' : '700');
     t.setAttribute('aria-hidden', 'true');
@@ -482,8 +555,10 @@ function exportCSV() {
   S.forEach(s => {
     csv += `\n${s.l.toUpperCase()},$${(s.sub * m).toFixed(2)},${(s.sub / NET * 100).toFixed(1)}%,\n`;
     s.items.forEach(it => {
-      const note = it.nt.replace(/,/g, ';'); // escape commas
-      csv += `  ${it.n},$${(it.bw * m).toFixed(2)},${(it.bw / NET * 100).toFixed(1)}%,${note}\n`;
+      // RFC 4180: escape double-quotes by doubling; wrap all text fields in quotes
+      const name = it.n.replace(/"/g, '""');
+      const note = (it.nt || '').replace(/"/g, '""');
+      csv += `"  ${name}","$${(it.bw * m).toFixed(2)}","${(it.bw / NET * 100).toFixed(1)}%","${note}"\n`;
     });
   });
 
@@ -499,19 +574,44 @@ function exportCSV() {
 }
 
 // ─── Wealth Tab ───────────────────────────────────────────────────────────────
+// Maps wealth goal labels to net worth account IDs for real-balance overlay
+const GOAL_TO_NW = {
+  'Emergency Fund':  'hysa',
+  'H1B Legal Fund':  'h1b',
+  'Brokerage (Yr1)': 'brokerage',
+};
+
 function renderWealth() {
+  // Load latest net worth snapshot for real balance overlay (if available)
+  const nwSnaps   = typeof loadNW === 'function' ? loadNW() : [];
+  const latestNW  = nwSnaps.length > 0 ? nwSnaps[nwSnaps.length - 1] : null;
+
   const pg = document.getElementById('pgrid');
   pg.innerHTML = WEALTH_GOALS.map(it => {
-    const yr1 = it.bw * 26;
-    const pct = Math.min(yr1 / it.tgt * 100, 100).toFixed(0);
+    const yr1    = it.bw * PERIODS_PER_YEAR;
+    const pctYr1 = Math.min(yr1 / it.tgt * 100, 100).toFixed(0);
+
+    // Real balance from latest net worth snapshot (if mapped)
+    const nwKey    = GOAL_TO_NW[it.l];
+    const realBal  = latestNW && nwKey ? (latestNW.accounts[nwKey] || 0) : null;
+    const realPct  = realBal !== null ? Math.min(realBal / it.tgt * 100, 100).toFixed(0) : null;
+
+    const realStr  = realBal !== null
+      ? `<div style="margin-top:5px;font-size:10px;color:var(--muted)">
+           Actual: <strong style="color:${it.c}">$${realBal.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}</strong>
+           · <span style="color:var(--muted)">${realPct}% of target</span>
+         </div>`
+      : '';
+
     return `<div class="pc">
       <div class="pcl">${it.l}</div>
-      <div class="pca" style="color:${it.c}">$${Math.round(yr1).toLocaleString()}<span style="font-size:12px;color:var(--muted)">/yr</span></div>
+      <div class="pca" style="color:${it.c}">$${Math.round(yr1).toLocaleString()}<span style="font-size:12px;color:var(--muted)">/yr pace</span></div>
       <div class="pcs">${it.nt}</div>
-      <div class="pbar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="${it.l}: ${pct}% of Year 1 target">
-        <div class="pfill" style="width:${pct}%;background:${it.c}"></div>
+      <div class="pbar" role="progressbar" aria-valuenow="${pctYr1}" aria-valuemin="0" aria-valuemax="100" aria-label="${it.l}: ${pctYr1}% of Year 1 target">
+        <div class="pfill" style="width:${pctYr1}%;background:${it.c}"></div>
       </div>
-      <div class="pcpct">${pct}% of Year 1 target</div>
+      <div class="pcpct">${pctYr1}% of Year 1 pace${realStr ? '' : ''}</div>
+      ${realStr}
     </div>`;
   }).join('');
 
@@ -666,7 +766,10 @@ function init() {
     const living = S.find(s => s.id === 'living');
     if (living) {
       const hiItem = living.items.find(i => i.n === 'Health Insurance');
-      if (hiItem) { living.sub = living.sub + hiVal; hiItem.bw = hiVal; }
+      if (hiItem) {
+        hiItem.bw = hiVal;
+        living.sub = roundMoney(living.items.reduce((sum, it) => sum + it.bw, 0));
+      }
     }
   }
 
@@ -679,6 +782,7 @@ function init() {
   // Render all sections
   renderKPIs();
   renderOverviewTrackerPulse();
+  renderVisaTimeline();
   renderDonut();
   renderBars();
   renderBudgetGrid();
