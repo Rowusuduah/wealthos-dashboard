@@ -138,12 +138,16 @@ function renderTrackerPeriodHeader(period) {
         ${trackerOffset >= 0 ? 'disabled aria-disabled="true"' : ''}>Next →</button>
     </div>`;
 
-  document.getElementById('tracker-prev').addEventListener('click', () => {
-    trackerOffset--;
-    renderTracker();
-  });
-  document.getElementById('tracker-next').addEventListener('click', () => {
-    if (trackerOffset < 0) { trackerOffset++; renderTracker(); }
+}
+
+// ─── Period Nav Delegation (wired once in initTracker) ────────────────────────
+function initTrackerNav() {
+  const headerEl = document.getElementById('tracker-period-header');
+  if (!headerEl || headerEl._navDelegated) return;
+  headerEl._navDelegated = true;
+  headerEl.addEventListener('click', e => {
+    if (e.target.id === 'tracker-prev') { trackerOffset--; renderTracker(); }
+    if (e.target.id === 'tracker-next' && trackerOffset < 0) { trackerOffset++; renderTracker(); }
   });
 }
 
@@ -539,12 +543,13 @@ function backupData() {
   } catch(e) {}
 
   const data = {
-    version:         2,
+    version:         3,
     exported:        new Date().toISOString(),
     transactions:    TXN,
     checklist:       localStorage.getItem('wealthos_checklist'),
     healthInsurance: localStorage.getItem('wealthos_health_insurance'),
     networth:        localStorage.getItem('wealthos_networth'),
+    creditscore:     localStorage.getItem('wealthos_creditscore'),
     periodNotes:     notes,
   };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -570,6 +575,7 @@ function restoreData(file) {
       if (data.checklist)       localStorage.setItem('wealthos_checklist', data.checklist);
       if (data.healthInsurance) localStorage.setItem('wealthos_health_insurance', data.healthInsurance);
       if (data.networth)        localStorage.setItem('wealthos_networth', data.networth);
+      if (data.creditscore)     localStorage.setItem('wealthos_creditscore', data.creditscore);
       if (data.periodNotes)     Object.entries(data.periodNotes).forEach(([k, v]) => { try { localStorage.setItem(k, v); } catch(e) {} });
       renderTracker();
     } catch(err) {
@@ -577,6 +583,55 @@ function restoreData(file) {
     }
   };
   reader.readAsText(file);
+}
+
+// ─── Render: Multi-Period Spending Comparison ─────────────────────────────────
+function renderMultiPeriodChart() {
+  const el = document.getElementById('tracker-multi-period');
+  if (!el) return;
+
+  // Collect last 6 periods
+  const cols = [];
+  for (let i = -5; i <= 0; i++) {
+    const p     = getPeriod(i);
+    const txns  = txnsForPeriod(p);
+    const spend = spendByCategory(txns);
+    const total = roundMoney(Object.values(spend).reduce((a, b) => a + b, 0));
+    // Short label: month/day of period start
+    const lbl = p.start.toLocaleDateString('en-US', {month:'short', day:'numeric'});
+    cols.push({ total, lbl, isCurrent: i === 0, hasData: txns.length > 0 });
+  }
+
+  const anyData = cols.some(c => c.hasData);
+  const maxVal  = Math.max(...cols.map(c => c.total), NET * 0.05); // at least 5% of budget for scale
+
+  el.innerHTML = `
+    <div class="card" style="margin-top:14px">
+      <div class="card-title">Spending — last 6 pay periods</div>
+      ${!anyData
+        ? `<p style="font-size:11px;color:var(--muted);padding:8px 0">No spending data yet — will populate as you log transactions.</p>`
+        : `<div class="mp-bars" style="margin-top:12px">
+            ${cols.map(c => {
+              const pct    = maxVal > 0 ? (c.total / maxVal * 100).toFixed(1) : '0';
+              const isOver = c.total > NET;
+              const col    = isOver ? 'var(--red)' : c.total / NET > 0.8 ? 'var(--orange)' : 'var(--green)';
+              return `<div class="mp-bar-col">
+                <div class="mp-val">${c.total > 0 ? '$' + Math.round(c.total).toLocaleString() : ''}</div>
+                <div class="mp-bar-wrap">
+                  <div class="mp-bar" style="height:${pct}%;background:${col};${c.isCurrent ? 'outline:1px dashed var(--brig);' : ''}"></div>
+                </div>
+              </div>`;
+            }).join('')}
+          </div>
+          <div style="display:flex;gap:6px;margin-top:4px">
+            ${cols.map(c => `<div class="mp-lbl" style="${c.isCurrent ? 'color:var(--text);font-weight:600' : ''}">${c.lbl}</div>`).join('')}
+          </div>
+          <div style="margin-top:10px;display:flex;align-items:center;gap:8px;font-size:10px;color:var(--muted)">
+            <span style="width:16px;height:2px;background:var(--border);display:inline-block"></span>
+            Budget: $${NET.toLocaleString('en-US',{maximumFractionDigits:0})} / period ·
+            <span style="color:var(--text)">dashed = current period</span>
+          </div>`}
+    </div>`;
 }
 
 // ─── Main Render ─────────────────────────────────────────────────────────────
@@ -589,6 +644,7 @@ function renderTracker() {
   renderTrackerChart(txns);
   renderTrackerInsights(period, txns);
   renderTrackerLog(txns);
+  renderMultiPeriodChart();
 }
 
 // ─── Init (called once from app.js init()) ────────────────────────────────────
@@ -597,4 +653,5 @@ function initTracker() {
   renderTrackerForm();   // only once — sets up persistent event listeners
   renderTrackerBackup(); // only once — backup/restore UI
   renderTracker();
+  initTrackerNav();      // only once — delegates prev/next nav on permanent header container
 }

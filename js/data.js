@@ -229,6 +229,18 @@ const DATING_MARRIAGE = [
   {tag:"Year 3+",tit:"Home Down Payment",bud:"$50/BW from Year 3",note:"Tampa ~$480K median. Need ~$58K. Build equity not landlord's wealth."},
 ];
 
+// ─── Visa / Immigration Timeline ──────────────────────────────────────────────
+// Assumes OPT authorization June 5 2026. Update dates with attorney after confirmation.
+const VISA_TIMELINE = [
+  {l:'OPT authorization begins',    date:'2026-06-05', note:'F-1 OPT active. First day of paid employment.',                        c:'var(--green)'},
+  {l:'Retain H1B attorney',         date:'2026-11-01', note:'Research Oct, retain Nov. Need 4–5 months lead time before lottery.',  c:'var(--orange)'},
+  {l:'File STEM OPT extension',     date:'2027-03-07', note:'90 days before OPT expiry. File I-765 with DSO. Do NOT miss this.',   c:'var(--red)'},
+  {l:'H1B lottery registration',    date:'2027-04-01', note:'USCIS opens ~April 1. Attorney submits registration. ~$215 fee.',      c:'var(--purple)'},
+  {l:'OPT expiry',                  date:'2027-06-04', note:'12 months from start. STEM extension must be pending or approved.',    c:'var(--red)'},
+  {l:'H1B takes effect (if selected)',date:'2027-10-01',note:'Cap-subject H1B begins. STEM OPT bridges the gap.',                  c:'var(--blue)'},
+  {l:'STEM OPT expires',            date:'2029-06-04', note:'24-month extension ends. Green Card or H1B must be secured by now.',  c:'var(--gold)'},
+];
+
 // ─── Ghana Long-term Plan ──────────────────────────────────────────────────
 const GHANA_PLAN = [
   {e:'🏠',t:'Ghana property fund (Year 3+)',d:"$25-50/BW. Accra land $10K-50K. $25/BW = $13,000 in 10 years. Your legacy."},
